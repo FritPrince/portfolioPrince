@@ -127,7 +127,7 @@ export function Contact() {
               <span className="text-gradient animate-gradient">Contactez-moi</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Vous avez un projet en tête ? N'hésitez pas à me contacter pour en discuter
+              Vous avez un projet en tête ? N hésitez pas à me contacter pour en discuter
             </p>
           </div>
 
@@ -172,7 +172,7 @@ export function Contact() {
                   </div>
                   <p className="text-gray-600 leading-relaxed">
                     Je suis actuellement disponible pour de nouveaux projets. 
-                    N'hésitez pas à me contacter pour discuter de vos besoins et 
+                    N hésitez pas à me contacter pour discuter de vos besoins et 
                     voir comment je peux vous aider à concrétiser vos idées.
                   </p>
                 </div>

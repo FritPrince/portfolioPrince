@@ -1,4 +1,4 @@
-import { Project, Skill } from './types';
+import { Project, Skill } from '../types';
 
 export const skills: Skill[] = [
   // Frontend

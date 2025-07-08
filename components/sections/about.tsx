@@ -101,7 +101,7 @@ export function About() {
                 <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
                 <p className="text-lg text-gray-700 leading-relaxed pl-8">
                   Passionné par le développement web depuis plus de 5 ans, je me spécialise dans la création 
-                  d'applications web modernes et performantes. Mon approche combine créativité technique et 
+                  d applications web modernes et performantes. Mon approche combine créativité technique et 
                   rigueur méthodologique pour livrer des solutions qui dépassent les attentes.
                 </p>
               </div>
@@ -109,9 +109,9 @@ export function About() {
               <div className="relative">
                 <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
                 <p className="text-lg text-gray-700 leading-relaxed pl-8">
-                  Expert en React, Next.js et Node.js, j'accompagne mes clients dans leur transformation 
+                  Expert en React, Next.js et Node.js, j accompagne mes clients dans leur transformation 
                   digitale en créant des expériences utilisateur exceptionnelles. Chaque projet est une 
-                  opportunité d'innover et de repousser les limites du possible.
+                  opportunité d innover et de repousser les limites du possible.
                 </p>
               </div>
 

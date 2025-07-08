@@ -95,7 +95,7 @@ export function Hero() {
 
           <p className="text-lg md:text-xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-scale">
             Je transforme vos idées en expériences web exceptionnelles avec une passion pour 
-            l'innovation et les technologies de pointe. Chaque ligne de code raconte une histoire.
+            l innovation et les technologies de pointe. Chaque ligne de code raconte une histoire.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 animate-slide-up">

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Prince ONILOU - Développeur Web Fullstack',
     description: 'Portfolio de Prince ONILOU, développeur web fullstack spécialisé en React, Next.js, Node.js et technologies modernes.',
-    url: 'https://alexandre-dubois.dev',
+    url: 'https://fritprince.github.io/MyPortfolio/',
     siteName: 'Prince ONILOU Portfolio',
     type: 'website',
   },
