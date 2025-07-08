@@ -158,16 +158,16 @@ export function Projects() {
                   </p>
                   
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {project.technologies.map((tech, techIndex) => (
-                      <Badge 
-                        key={tech} 
-                        variant="secondary" 
-                        className="text-xs bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-blue-100 hover:to-purple-100 hover:text-blue-700 transition-all duration-300 animate-fade-in-scale"
-                        style={{ animationDelay: `${techIndex * 0.05}s` }}
-                      >
-                        {tech}
-                      </Badge>
-                    ))}
+                    {project.technologies.map((tech: string, techIndex: number) => (
+  <Badge 
+    key={tech} 
+    variant="secondary" 
+    className="text-xs bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-blue-100 hover:to-purple-100 hover:text-blue-700 transition-all duration-300 animate-fade-in-scale"
+    style={{ animationDelay: `${techIndex * 0.05}s` }}
+  >
+    {tech}
+  </Badge>
+))}
                   </div>
 
                   <div className="flex gap-4">
