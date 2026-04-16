@@ -1,24 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { projects } from '@/lib/data';
-import { Project } from '@/types';
+import { supabaseAdmin } from '@/lib/supabase';
 
-// Simuler une base de données en mémoire
-let projectsData: Project[] = [...projects];
+export const dynamic = 'force-dynamic';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizeProject(p: any) {
+  return {
+    id:           p.id,
+    title:        p.title,
+    description:  p.description,
+    image:        p.image        ?? '',
+    gallery:      p.gallery      ?? [],
+    technologies: p.technologies ?? [],
+    githubUrl:    p.github_url   ?? '',
+    demoUrl:      p.demo_url     ?? '',
+    category:     p.category,
+    featured:     p.featured     ?? false,
+    createdAt:    p.created_at,
+  };
+}
 
 export async function GET(
-  request: NextRequest,
+  _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const project = projectsData.find((p) => p.id === params.id);
-  
-  if (!project) {
-    return NextResponse.json(
-      { error: 'Projet non trouvé' },
-      { status: 404 }
-    );
-  }
+  const db = supabaseAdmin();
+  const { data, error } = await db
+    .from('projects')
+    .select('*')
+    .eq('id', params.id)
+    .single();
 
-  return NextResponse.json(project);
+  if (error || !data) return NextResponse.json({ error: 'Projet non trouvé' }, { status: 404 });
+  return NextResponse.json(normalizeProject(data));
 }
 
 export async function PUT(
@@ -27,60 +41,45 @@ export async function PUT(
 ) {
   try {
     const body = await request.json();
-    const projectIndex = projectsData.findIndex((p) => p.id === params.id);
+    const { title, description, image, gallery, technologies, githubUrl, demoUrl, category, featured } = body;
 
-    if (projectIndex === -1) {
-      return NextResponse.json(
-        { error: 'Projet non trouvé' },
-        { status: 404 }
-      );
-    }
+    const db = supabaseAdmin();
+    const { data, error } = await db
+      .from('projects')
+      .update({
+        title,
+        description,
+        image,
+        gallery:      Array.isArray(gallery) ? gallery : [],
+        technologies: Array.isArray(technologies) ? technologies : [],
+        github_url:   githubUrl,
+        demo_url:     demoUrl,
+        category,
+        featured,
+        updated_at:   new Date().toISOString(),
+      })
+      .eq('id', params.id)
+      .select()
+      .single();
 
-    // Mettre à jour le projet
-    projectsData[projectIndex] = {
-      ...projectsData[projectIndex],
-      ...body,
-    };
-
-    return NextResponse.json(
-      { message: 'Projet mis à jour avec succès', project: projectsData[projectIndex] },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('Erreur lors de la mise à jour du projet:', error);
-    return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
-      { status: 500 }
-    );
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ message: 'Projet mis à jour', project: normalizeProject(data) });
+  } catch {
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const projectIndex = projectsData.findIndex((p) => p.id === params.id);
+    const db = supabaseAdmin();
+    const { error } = await db.from('projects').delete().eq('id', params.id);
 
-    if (projectIndex === -1) {
-      return NextResponse.json(
-        { error: 'Projet non trouvé' },
-        { status: 404 }
-      );
-    }
-
-    // Supprimer le projet
-    projectsData.splice(projectIndex, 1);
-
-    return NextResponse.json(
-      { message: 'Projet supprimé avec succès' },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('Erreur lors de la suppression du projet:', error);
-    return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
-      { status: 500 }
-    );
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ message: 'Projet supprimé' });
+  } catch {
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }

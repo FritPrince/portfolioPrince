@@ -1,98 +1,187 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { useLanguage } from '@/hooks/use-language';
+import { Moon, Sun, Menu, X } from 'lucide-react';
 
 export function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
+  const { theme, setTheme } = useTheme();
+  const { lang, toggle: toggleLang, t } = useLanguage();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-    setIsMobileMenuOpen(false);
+  useEffect(() => {
+    const sections = ['about', 'services', 'skills', 'experience', 'projects', 'contact'];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        });
+      },
+      { rootMargin: '-40% 0px -55% 0px' }
+    );
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setMobileOpen(false);
   };
 
-  const navItems = [
-    { label: 'Accueil', href: '#' },
-    { label: 'À propos', href: '#about' },
-    { label: 'Compétences', href: '#skills' },
-    { label: 'Projets', href: '#projects' },
-    { label: 'Contact', href: '#contact' },
+  const navLinks = [
+    { key: 'about', label: t('nav.about') },
+    { key: 'services', label: t('nav.services') },
+    { key: 'skills', label: t('nav.skills') },
+    { key: 'experience', label: t('nav.experience') },
+    { key: 'projects', label: t('nav.projects') },
+    { key: 'contact', label: t('nav.contact') },
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      isScrolled 
-        ? 'glass backdrop-blur-xl shadow-2xl border-b border-white/20' 
-        : 'bg-transparent'
-    }`}>
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo avec animation */}
-          <div className="font-bold text-2xl hover-lift cursor-pointer">
-            <span className="text-gradient animate-gradient flex items-center gap-2">
-              <Sparkles className="h-6 w-6 animate-pulse" />
-              PO
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          scrolled
+            ? 'glass border-b border-border py-3'
+            : 'bg-transparent py-5'
+        }`}
+      >
+        <div className="container mx-auto px-6 flex items-center justify-between">
+          {/* Logo */}
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="font-space text-xl font-bold tracking-tight group"
+          >
+            <span className="text-foreground group-hover:text-blue-500 transition-colors duration-300">
+              prince
             </span>
-          </div>
+            <span className="text-blue-500">.</span>
+          </button>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navItems.map((item, index) => (
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
               <button
-                key={item.label}
-                onClick={() => scrollToSection(item.href.replace('#', ''))}
-                className={`relative text-gray-700 hover:text-gradient transition-all duration-300 font-medium group animate-fade-in-scale`}
-                style={{ animationDelay: `${index * 0.1}s` }}
+                key={link.key}
+                onClick={() => scrollTo(link.key)}
+                className={`nav-link font-inter text-sm font-medium transition-colors duration-200 ${
+                  activeSection === link.key
+                    ? 'text-blue-500'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
-                {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
+                {link.label}
               </button>
             ))}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden glass rounded-full hover-lift"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? 
-              <X className="h-5 w-5 text-gradient" /> : 
-              <Menu className="h-5 w-5 text-gradient" />
-            }
-          </Button>
-        </div>
+          {/* Right controls */}
+          <div className="hidden md:flex items-center gap-3">
+            {/* Language toggle */}
+            <button
+              onClick={toggleLang}
+              className="flex items-center h-7 rounded-full bg-secondary border border-border overflow-hidden text-xs font-semibold font-inter"
+            >
+              <span
+                className={`px-2.5 py-1 transition-all duration-200 ${
+                  lang === 'fr'
+                    ? 'bg-blue-500 text-white'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                FR
+              </span>
+              <span
+                className={`px-2.5 py-1 transition-all duration-200 ${
+                  lang === 'en'
+                    ? 'bg-blue-500 text-white'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                EN
+              </span>
+            </button>
 
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 glass backdrop-blur-xl border-t border-white/20 shadow-2xl animate-slide-up">
-            <nav className="flex flex-col py-4">
-              {navItems.map((item, index) => (
-                <button
-                  key={item.label}
-                  onClick={() => scrollToSection(item.href.replace('#', ''))}
-                  className={`text-left px-6 py-4 text-gray-700 hover:text-gradient hover:bg-white/10 transition-all duration-300 font-medium animate-fade-in-scale`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
+            {/* Theme toggle */}
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="w-8 h-8 rounded-full flex items-center justify-center bg-secondary border border-border text-muted-foreground hover:text-foreground hover:border-blue-500/40 transition-all duration-200"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            {/* CTA */}
+            <button
+              onClick={() => scrollTo('contact')}
+              className="btn-primary-glow px-4 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold font-inter transition-colors duration-200"
+            >
+              {t('nav.hire')}
+            </button>
           </div>
-        )}
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-full bg-secondary border border-border text-foreground"
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile menu overlay */}
+      <div
+        className={`fixed inset-0 z-40 md:hidden transition-all duration-400 ${
+          mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <div
+          className="absolute inset-0 bg-background/95 backdrop-blur-xl"
+          onClick={() => setMobileOpen(false)}
+        />
+        <nav
+          className={`absolute inset-0 flex flex-col items-center justify-center gap-8 transition-all duration-400 ${
+            mobileOpen ? 'animate-reveal-up' : ''
+          }`}
+        >
+          {navLinks.map((link) => (
+            <button
+              key={link.key}
+              onClick={() => scrollTo(link.key)}
+              className="font-space text-3xl font-bold text-foreground hover:text-blue-500 transition-colors duration-200"
+            >
+              {link.label}
+            </button>
+          ))}
+          <div className="flex items-center gap-4 mt-4">
+            <button
+              onClick={toggleLang}
+              className="flex items-center h-9 rounded-full bg-secondary border border-border overflow-hidden text-sm font-semibold"
+            >
+              <span className={`px-4 py-2 ${lang === 'fr' ? 'bg-blue-500 text-white' : 'text-muted-foreground'}`}>FR</span>
+              <span className={`px-4 py-2 ${lang === 'en' ? 'bg-blue-500 text-white' : 'text-muted-foreground'}`}>EN</span>
+            </button>
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="w-9 h-9 rounded-full flex items-center justify-center bg-secondary border border-border text-foreground"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+          </div>
+        </nav>
       </div>
-    </header>
+    </>
   );
 }

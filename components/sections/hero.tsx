@@ -1,160 +1,180 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { ArrowDown, Github, Linkedin, Mail, Sparkles, Zap } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '@/hooks/use-language';
+import { Github, Linkedin, Mail, ArrowDown, Download } from 'lucide-react';
 
 export function Hero() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { t, lang } = useLanguage();
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [roleVisible, setRoleVisible] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const orb1Ref = useRef<HTMLDivElement>(null);
+  const orb2Ref = useRef<HTMLDivElement>(null);
+
+  const rolesFr = [
+    'Développeur Fullstack',
+    'Creative Developer',
+    'Designer UX/UI',
+    'Ingénieur IoT',
+    'Expert Cybersécurité',
+  ];
+  const rolesEn = [
+    'Fullstack Developer',
+    'Creative Developer',
+    'UX/UI Designer',
+    'IoT Engineer',
+    'Cybersecurity Expert',
+  ];
 
   useEffect(() => {
-    setIsVisible(true);
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    setMounted(true);
   }, []);
 
-  const scrollToContact = () => {
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRoleVisible(false);
+      setTimeout(() => {
+        setRoleIndex((i) => (i + 1) % 5);
+        setRoleVisible(true);
+      }, 380);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 30;
+      const y = (e.clientY / window.innerHeight - 0.5) * 30;
+      if (orb1Ref.current) orb1Ref.current.style.transform = `translate(${x}px, ${y}px)`;
+      if (orb2Ref.current) orb2Ref.current.style.transform = `translate(${-x * 0.7}px, ${-y * 0.7}px)`;
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Background animé avec dégradés */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-teal-50 animate-gradient" />
-      
-      {/* Particules flottantes */}
-      <div className="floating-particles">
-        {[...Array(9)].map((_, i) => (
-          <div key={i} className="particle" />
-        ))}
-      </div>
-      
-      {/* Éléments de fond animés avec dégradés */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div 
-          className="absolute w-96 h-96 rounded-full opacity-30 animate-float"
-          style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            top: '10%',
-            right: '10%',
-            transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`,
-            filter: 'blur(40px)',
-          }}
-        />
-        <div 
-          className="absolute w-80 h-80 rounded-full opacity-25 animate-float"
-          style={{
-            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            bottom: '15%',
-            left: '15%',
-            animationDelay: '2s',
-            transform: `translate(${mousePosition.x * -0.015}px, ${mousePosition.y * -0.015}px)`,
-            filter: 'blur(35px)',
-          }}
-        />
-        <div 
-          className="absolute w-64 h-64 rounded-full opacity-20 animate-float"
-          style={{
-            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            top: '50%',
-            left: '50%',
-            animationDelay: '4s',
-            transform: `translate(${mousePosition.x * 0.01}px, ${mousePosition.y * 0.01}px)`,
-            filter: 'blur(30px)',
-          }}
-        />
-      </div>
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-background dot-grid" />
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className={`text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="mb-8 animate-bounce-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6 animate-pulse-glow">
-              <Sparkles className="h-4 w-4 text-purple-600" />
-              <span className="text-sm font-medium bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Développeur Passionné
-              </span>
-              <Zap className="h-4 w-4 text-blue-600" />
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-gray-900 mb-6">
-              <span className="text-gradient animate-gradient">
-                Prince ONILOU
-              </span>
-            </h1>
-            
-            <div className="text-xl md:text-2xl lg:text-4xl text-gray-600 mb-8">
-              <span className="typing-animation">Développeur Web Fullstack</span>
-            </div>
+      {/* Orbs */}
+      <div
+        ref={orb1Ref}
+        className="absolute top-[10%] right-[8%] w-[480px] h-[480px] orb-blue opacity-40 dark:opacity-30 transition-transform duration-700 ease-out pointer-events-none"
+      />
+      <div
+        ref={orb2Ref}
+        className="absolute bottom-[8%] left-[5%] w-[380px] h-[380px] orb-blue-dim opacity-30 dark:opacity-20 transition-transform duration-700 ease-out pointer-events-none"
+      />
+
+      {/* Content */}
+      <div className="container mx-auto px-6 relative z-10 pt-24 pb-16">
+        <div className={`max-w-4xl mx-auto text-center ${mounted ? 'animate-reveal-up' : 'opacity-0'}`}>
+
+          {/* Badge */}
+          <div
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/5 text-blue-500 dark:text-blue-400 text-sm font-inter font-medium mb-8 animate-fade-in"
+            style={{ animationDelay: '0.1s' }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            {t('hero.badge')}
           </div>
 
-          <p className="text-lg md:text-xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-scale">
-            Je transforme vos idées en expériences web exceptionnelles avec une passion pour 
-            l innovation et les technologies de pointe. Chaque ligne de code raconte une histoire.
+          {/* Name */}
+          <h1
+            className="font-space font-bold leading-[0.95] mb-6 animate-reveal-up"
+            style={{ animationDelay: '0.15s' }}
+          >
+            <span className="block text-[clamp(3.5rem,10vw,7.5rem)] text-foreground">
+              PRINCE AÏNEEL
+            </span>
+            <span className="block text-[clamp(3.5rem,10vw,7.5rem)] text-gradient-blue">
+              ONILOU.
+            </span>
+          </h1>
+
+          {/* Rotating role */}
+          <div
+            className="h-10 flex items-center justify-center mb-8 overflow-hidden animate-fade-in"
+            style={{ animationDelay: '0.3s' }}
+          >
+            <span
+              className={`font-inter text-lg md:text-xl text-blue-500 dark:text-blue-400 font-medium transition-all duration-380 ${
+                roleVisible ? 'animate-role-in' : 'animate-role-out opacity-0'
+              }`}
+            >
+              — {(lang === 'fr' ? rolesFr : rolesEn)[roleIndex]}
+            </span>
+          </div>
+
+          {/* Tagline */}
+          <p
+            className="font-inter text-base md:text-lg text-muted-foreground italic mb-12 max-w-xl mx-auto animate-fade-in"
+            style={{ animationDelay: '0.4s' }}
+          >
+            "{t('hero.tagline')}"
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 animate-slide-up">
-            <Button 
-              onClick={scrollToContact}
-              size="lg"
-              className="btn-gradient text-white px-10 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl group"
+          {/* CTAs */}
+          <div
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-reveal-up"
+            style={{ animationDelay: '0.5s' }}
+          >
+            <button
+              onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+              className="btn-primary-glow w-full sm:w-auto px-8 py-3.5 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-semibold font-inter text-sm transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-0.5"
             >
-              <span className="flex items-center gap-2">
-                Démarrer un Projet
-                <Sparkles className="h-5 w-5 group-hover:rotate-12 transition-transform" />
-              </span>
-            </Button>
-            
-            <div className="flex gap-4">
-              {[
-                { icon: Github, color: 'from-gray-600 to-gray-800', delay: '0s' },
-                { icon: Linkedin, color: 'from-blue-600 to-blue-800', delay: '0.1s' },
-                { icon: Mail, color: 'from-red-500 to-pink-600', delay: '0.2s' }
-              ].map(({ icon: Icon, color, delay }, index) => (
-                <Button 
-                  key={index}
-                  variant="outline" 
-                  size="icon" 
-                  className={`rounded-full hover-lift hover-glow glass border-2 border-white/20 group animate-bounce-in`}
-                  style={{ animationDelay: delay }}
-                >
-                  <Icon className={`h-5 w-5 bg-gradient-to-r ${color} bg-clip-text text-transparent group-hover:scale-110 transition-transform`} />
-                </Button>
-              ))}
-            </div>
+              {t('hero.cta_projects')}
+            </button>
+            <button
+              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-border hover:border-blue-500/50 text-foreground hover:text-blue-500 font-semibold font-inter text-sm transition-all duration-200 hover:-translate-y-0.5"
+            >
+              {t('hero.cta_contact')}
+            </button>
+            <a
+              href="/cv-prince-aineel-onilou.pdf"
+              download
+              className="flex items-center gap-2 w-full sm:w-auto px-8 py-3.5 rounded-full border border-dashed border-border hover:border-blue-500/50 text-muted-foreground hover:text-blue-500 font-semibold font-inter text-sm transition-all duration-200 hover:-translate-y-0.5"
+            >
+              <Download className="w-4 h-4" />
+              {t('hero.download_cv')}
+            </a>
           </div>
 
-          {/* Indicateur de scroll animé */}
-          <div className="animate-bounce">
-            <div className="inline-flex flex-col items-center gap-2 text-gray-400">
-              <span className="text-sm font-medium">Découvrir</span>
-              <div className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center">
-                <div className="w-1 h-3 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mt-2 animate-bounce"></div>
-              </div>
-              <ArrowDown className="h-4 w-4 animate-bounce" style={{ animationDelay: '0.5s' }} />
-            </div>
+          {/* Social links */}
+          <div
+            className="flex items-center justify-center gap-4 animate-fade-in"
+            style={{ animationDelay: '0.6s' }}
+          >
+            {[
+              { href: 'https://github.com/FritPrince', icon: Github, label: 'GitHub' },
+              { href: 'https://linkedin.com', icon: Linkedin, label: 'LinkedIn' },
+              { href: 'mailto:aprinceaineel@gmail.com', icon: Mail, label: 'Email' },
+            ].map(({ href, icon: Icon, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-blue-500 hover:border-blue-500/50 hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <Icon className="w-4 h-4" />
+              </a>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Effet de lumière suivant la souris */}
-      <div 
-        className="absolute pointer-events-none opacity-30"
-        style={{
-          left: mousePosition.x - 100,
-          top: mousePosition.y - 100,
-          width: 200,
-          height: 200,
-          background: 'radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%)',
-          borderRadius: '50%',
-          transition: 'all 0.1s ease-out',
-        }}
-      />
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground animate-float">
+        <span className="font-inter text-xs tracking-widest uppercase">{t('hero.scroll')}</span>
+        <div className="w-px h-12 bg-gradient-to-b from-blue-500/60 to-transparent" />
+        <ArrowDown className="w-3 h-3" />
+      </div>
     </section>
   );
 }

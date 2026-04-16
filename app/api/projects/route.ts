@@ -1,70 +1,74 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { projects } from '@/lib/data';
-import { Project } from '@/types';
+import { supabaseAdmin } from '@/lib/supabase';
 
-// Simuler une base de données en mémoire
-let projectsData: Project[] = [...projects];
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const category = searchParams.get('category');
-  const featured = searchParams.get('featured');
+  const featured  = searchParams.get('featured');
 
-  let filteredProjects = projectsData;
+  const db = supabaseAdmin();
+  let query = db.from('projects').select('*').order('created_at', { ascending: false });
 
-  if (category && category !== 'all') {
-    filteredProjects = filteredProjects.filter(
-      (project) => project.category === category
-    );
-  }
+  if (category && category !== 'all') query = query.eq('category', category);
+  if (featured === 'true')            query = query.eq('featured', true);
 
-  if (featured === 'true') {
-    filteredProjects = filteredProjects.filter(
-      (project) => project.featured
-    );
-  }
+  const { data, error } = await query;
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json(filteredProjects);
+  // Map snake_case → camelCase for frontend compatibility
+  const mapped = (data ?? []).map(normalizeProject);
+  return NextResponse.json(mapped);
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, description, image, technologies, githubUrl, demoUrl, category, featured } = body;
+    const { title, description, image, gallery, technologies, githubUrl, demoUrl, category, featured } = body;
 
-    // Validation basique
-    if (!title || !description || !technologies || !githubUrl || !category) {
-      return NextResponse.json(
-        { error: 'Champs requis manquants' },
-        { status: 400 }
-      );
+    if (!title || !description || !category) {
+      return NextResponse.json({ error: 'Champs requis manquants' }, { status: 400 });
     }
 
-    // Créer le nouveau projet
-    const newProject: Project = {
-      id: Date.now().toString(),
-      title,
-      description,
-      image: image || 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=800',
-      technologies,
-      githubUrl,
-      demoUrl: demoUrl || '#',
-      category,
-      featured: featured || false,
-    };
+    const db = supabaseAdmin();
+    const { data, error } = await db
+      .from('projects')
+      .insert({
+        title,
+        description,
+        image:        image        ?? '',
+        gallery:      Array.isArray(gallery) ? gallery : [],
+        technologies: Array.isArray(technologies) ? technologies : [],
+        github_url:   githubUrl    ?? '',
+        demo_url:     demoUrl      ?? '',
+        category,
+        featured:     featured     ?? false,
+      })
+      .select()
+      .single();
 
-    // Ajouter à la "base de données"
-    projectsData.push(newProject);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-    return NextResponse.json(
-      { message: 'Projet créé avec succès', project: newProject },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error('Erreur lors de la création du projet:', error);
-    return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: 'Projet créé', project: normalizeProject(data) }, { status: 201 });
+  } catch {
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizeProject(p: any) {
+  return {
+    id:           p.id,
+    title:        p.title,
+    description:  p.description,
+    image:        p.image        ?? '',
+    gallery:      p.gallery      ?? [],
+    technologies: p.technologies ?? [],
+    githubUrl:    p.github_url   ?? '',
+    demoUrl:      p.demo_url     ?? '',
+    category:     p.category,
+    featured:     p.featured     ?? false,
+    createdAt:    p.created_at,
+  };
 }

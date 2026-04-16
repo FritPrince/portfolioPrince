@@ -1,42 +1,49 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Providers } from '@/components/providers';
+import { FloatingNav } from '@/components/layout/floating-nav';
+import { Cursor } from '@/components/ui/cursor';
+import { SmoothScroll } from '@/components/ui/smooth-scroll';
+import { Toaster } from '@/components/ui/toaster';
 
-const inter = Inter({ subsets: ['latin'] });
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://prince-aineel.dev';
 
 export const metadata: Metadata = {
-  title: 'Prince ONILOU - Développeur Web Fullstack',
-  description: 'Portfolio de Prince ONILOU, développeur web fullstack spécialisé en React, Next.js, Node.js et technologies modernes.',
-  keywords: 'développeur web, fullstack, React, Next.js, Node.js, portfolio, freelance',
-  authors: [{ name: 'Prince ONILOU' }],
-  creator: 'Prince ONILOU',
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: 'Prince Aïneel ONILOU — Portfolio',
+    template: '%s | Prince Aïneel ONILOU',
+  },
+  description: 'Développeur Fullstack · Designer UX/UI · Ingénieur IoT · Cybersécurité · Pianiste — Basé à Cotonou, Bénin.',
+  keywords: ['développeur fullstack', 'designer UX/UI', 'IoT', 'cybersécurité', 'portfolio', 'Bénin', 'Cotonou', 'React', 'Next.js'],
+  authors: [{ name: 'Prince Aïneel ONILOU' }],
   openGraph: {
-    title: 'Prince ONILOU - Développeur Web Fullstack',
-    description: 'Portfolio de Prince ONILOU, développeur web fullstack spécialisé en React, Next.js, Node.js et technologies modernes.',
-    url: 'https://fritprince.github.io/MyPortfolio/',
-    siteName: 'Prince ONILOU Portfolio',
+    title: 'Prince Aïneel ONILOU — Portfolio',
+    description: 'Développeur Fullstack · Designer UX/UI · Ingénieur IoT · Cybersécurité · Pianiste',
     type: 'website',
+    url: BASE_URL,
+    siteName: 'Prince Aïneel ONILOU',
+    images: [{ url: '/profilBlanc.png', width: 1200, height: 630, alt: 'Prince Aïneel ONILOU' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Prince ONILOU - Développeur Web Fullstack',
-    description: 'Portfolio de Prince ONILOU, développeur web fullstack spécialisé en React, Next.js, Node.js et technologies modernes.',
-  },
-  robots: {
-    index: true,
-    follow: true,
+    title: 'Prince Aïneel ONILOU — Portfolio',
+    description: 'Développeur Fullstack · Designer UX/UI · IoT · Cybersécurité',
+    images: ['/profilBlanc.png'],
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className="scroll-smooth">
-      <body className={inter.className}>
-        {children}
+    <html lang="fr" suppressHydrationWarning>
+      <body>
+        <Providers>
+          <SmoothScroll />
+          <Cursor />
+          <FloatingNav />
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

@@ -1,228 +1,211 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useLanguage } from '@/hooks/use-language';
 import { projects } from '@/lib/data';
-import { Github, ExternalLink, Star, Sparkles, Eye, Heart } from 'lucide-react';
+import { Github, ExternalLink, Star, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
+type Filter = 'all' | 'fullstack' | 'frontend' | 'backend';
+
 export function Projects() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [filter, setFilter] = useState('all');
-  const [hoveredProject, setHoveredProject] = useState<string | null>(null);
-  const sectionRef = useRef<HTMLElement>(null);
+  const { t, lang } = useLanguage();
+  const [visible, setVisible] = useState(false);
+  const [filter, setFilter] = useState<Filter>('all');
+  const [hovered, setHovered] = useState<string | null>(null);
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
+      ([e]) => { if (e.isIntersecting) setVisible(true); },
+      { threshold: 0.05 }
     );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
+    if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 
-  const filteredProjects = filter === 'all' 
-    ? projects 
-    : projects.filter(project => project.category === filter);
+  const filtered = filter === 'all' ? projects : projects.filter((p) => p.category === filter);
 
-  const categories = [
-    { value: 'all', label: 'Tous', gradient: 'from-gray-600 to-gray-800' },
-    { value: 'fullstack', label: 'Fullstack', gradient: 'from-blue-500 to-purple-600' },
-    { value: 'frontend', label: 'Frontend', gradient: 'from-green-500 to-teal-600' },
-    { value: 'backend', label: 'Backend', gradient: 'from-orange-500 to-red-600' },
+  const filters: { key: Filter; label: string }[] = [
+    { key: 'all', label: t('projects.all') },
+    { key: 'fullstack', label: t('projects.fullstack') },
+    { key: 'frontend', label: t('projects.frontend') },
+    { key: 'backend', label: t('projects.backend') },
   ];
 
   return (
-    <section id="projects" ref={sectionRef} className="py-20 relative overflow-hidden">
-      {/* Background avec dégradé animé */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 animate-gradient" />
-      
-      {/* Éléments décoratifs */}
-      <div className="absolute top-20 right-10 w-40 h-40 bg-gradient-to-r from-purple-400/20 to-pink-500/20 rounded-full animate-float blur-2xl" />
-      <div className="absolute bottom-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-400/20 to-cyan-500/20 rounded-full animate-float blur-2xl" style={{ animationDelay: '2s' }} />
+    <section id="projects" ref={ref} className="py-28 relative overflow-hidden">
+      <div className="absolute inset-0 bg-background" />
+      <div className="absolute right-0 bottom-0 w-[500px] h-[500px] orb-blue-dim opacity-15 pointer-events-none" />
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="text-center mb-16 animate-fade-in-scale">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6 animate-pulse-glow">
-              <Eye className="h-4 w-4 text-blue-500" />
-              <span className="text-sm font-medium text-gradient">Portfolio Créatif</span>
-              <Sparkles className="h-4 w-4 text-purple-500" />
-            </div>
-            
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
-              <span className="text-gradient animate-gradient">Mes Projets</span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-              Découvrez quelques-uns de mes projets les plus récents et innovants
-            </p>
-
-            <div className="flex flex-wrap justify-center gap-4 mb-12">
-              {categories.map((category, index) => (
-                <Button
-                  key={category.value}
-                  variant={filter === category.value ? "default" : "outline"}
-                  onClick={() => setFilter(category.value)}
-                  className={`rounded-full px-6 py-2 font-semibold transition-all duration-300 hover-lift animate-bounce-in ${
-                    filter === category.value 
-                      ? `bg-gradient-to-r ${category.gradient} text-white border-0 animate-pulse-glow` 
-                      : 'glass border-2 border-white/20 hover:border-purple-300'
-                  }`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  {category.label}
-                </Button>
-              ))}
+      <div className="container mx-auto px-6 relative z-10">
+        {/* Header */}
+        <div className={`mb-12 section-hidden ${visible ? 'section-visible' : ''}`}>
+          <p className="font-inter text-sm font-medium text-blue-500 uppercase tracking-widest mb-3">
+            {t('projects.label')}
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <h2 className="font-space text-4xl md:text-5xl font-bold text-foreground mb-2">
+                {t('projects.title')}
+              </h2>
+              <p className="font-inter text-muted-foreground max-w-xl">
+                {t('projects.subtitle')}
+              </p>
             </div>
           </div>
+        </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project, index) => (
-              <Card 
-                key={project.id} 
-                className={`group hover-lift hover-glow transition-all duration-500 transform bg-white/80 backdrop-blur-sm border-0 shadow-xl animate-bounce-in relative overflow-hidden ${
-                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-                style={{ transitionDelay: `${index * 100}ms` }}
-                onMouseEnter={() => setHoveredProject(project.id)}
-                onMouseLeave={() => setHoveredProject(null)}
-              >
-                {/* Effet de shimmer */}
-                <div className="absolute inset-0 animate-shimmer opacity-30"></div>
-                
-                <CardHeader className="p-0 relative">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      width={400}
-                      height={200}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    
-                    {/* Overlay avec dégradé */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    {project.featured && (
-                      <div className="absolute top-4 right-4 animate-bounce-in">
-                        <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 animate-pulse-glow">
-                          <Star className="h-3 w-3 mr-1" />
-                          Featured
-                        </Badge>
-                      </div>
-                    )}
-                    
-                    {/* Boutons d'action en overlay */}
-                    <div className={`absolute inset-0 flex items-center justify-center gap-4 transition-all duration-300 ${
-                      hoveredProject === project.id ? 'opacity-100' : 'opacity-0'
-                    }`}>
-                      <Button 
-                        size="sm" 
-                        className="bg-white/90 text-gray-900 hover:bg-white rounded-full animate-bounce-in"
-                        asChild
-                      >
-                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                          <Github className="h-4 w-4" />
-                        </a>
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full animate-bounce-in"
-                        style={{ animationDelay: '0.1s' }}
-                        asChild
-                      >
-                        <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="p-6 relative z-10">
-                  <CardTitle className="text-xl mb-3 text-gray-900 group-hover:text-gradient transition-all duration-300">
-                    {project.title}
-                  </CardTitle>
-                  <p className="text-gray-600 mb-4 leading-relaxed">
-                    {project.description}
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {project.technologies.map((tech: string, techIndex: number) => (
-  <Badge 
-    key={tech} 
-    variant="secondary" 
-    className="text-xs bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-blue-100 hover:to-purple-100 hover:text-blue-700 transition-all duration-300 animate-fade-in-scale"
-    style={{ animationDelay: `${techIndex * 0.05}s` }}
-  >
-    {tech}
-  </Badge>
-))}
-                  </div>
-
-                  <div className="flex gap-4">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex-1 glass border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-300"
-                      asChild
-                    >
-                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                        <Github className="h-4 w-4 mr-2" />
-                        Code
-                      </a>
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 animate-pulse-glow"
-                      asChild
-                    >
-                      <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Demo
-                      </a>
-                    </Button>
-                  </div>
-                </CardContent>
-
-                {/* Indicateur de like */}
-                <div className="absolute bottom-4 right-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-400 hover:text-red-500 transition-colors duration-300"
-                  >
-                    <Heart className="h-4 w-4" />
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {/* Call to action */}
-          <div className="text-center mt-16 animate-fade-in-scale">
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full glass mb-6">
-              <Sparkles className="h-5 w-5 text-purple-500" />
-              <span className="font-medium text-gradient">Vous avez un projet en tête ?</span>
-            </div>
-            <Button 
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-full font-semibold hover-lift animate-pulse-glow"
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+        {/* Filter tabs */}
+        <div
+          className={`flex flex-wrap gap-2 mb-10 section-hidden ${visible ? 'section-visible' : ''}`}
+          style={{ transitionDelay: '0.15s' }}
+        >
+          {filters.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold font-inter transition-all duration-200 border ${
+                filter === f.key
+                  ? 'bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/20'
+                  : 'bg-secondary border-border text-muted-foreground hover:text-foreground hover:border-foreground/20'
+              }`}
             >
-              Discutons de votre projet
-            </Button>
-          </div>
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Projects grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filtered.map((project, i) => (
+            <div
+              key={project.id}
+              className={`group relative rounded-2xl border border-border bg-card overflow-hidden transition-all duration-300 hover:border-blue-500/40 hover:-translate-y-1 section-hidden ${visible ? 'section-visible' : ''}`}
+              style={{ transitionDelay: `${i * 0.07}s` }}
+              onMouseEnter={() => setHovered(project.id)}
+              onMouseLeave={() => setHovered(null)}
+            >
+              {/* Image */}
+              <div className="relative overflow-hidden h-44">
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+                {/* Overlay on hover */}
+                <div className={`absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center gap-4 transition-all duration-300 ${hovered === project.id ? 'opacity-100' : 'opacity-0'}`}>
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 rounded-full border border-border bg-card flex items-center justify-center text-foreground hover:text-blue-500 hover:border-blue-500/50 transition-all duration-200"
+                    >
+                      <Github className="w-4 h-4" />
+                    </a>
+                  )}
+                  {project.demoUrl && (
+                    <a
+                      href={project.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white hover:bg-blue-600 transition-all duration-200"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+
+                {/* Featured badge */}
+                {project.featured && (
+                  <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-background/90 backdrop-blur-sm border border-border text-xs font-semibold font-inter text-foreground">
+                    <Star className="w-3 h-3 text-blue-500 fill-blue-500" />
+                    {t('projects.featured')}
+                  </div>
+                )}
+
+                {/* Category */}
+                <div className="absolute top-3 right-3">
+                  <span className="px-2.5 py-1 rounded-full bg-background/90 backdrop-blur-sm border border-border text-xs font-medium font-inter text-muted-foreground capitalize">
+                    {project.category}
+                  </span>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-5">
+                <h3 className="font-space font-semibold text-base text-foreground mb-2 group-hover:text-blue-500 transition-colors duration-200">
+                  {project.title}
+                </h3>
+                <p className="font-inter text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-2">
+                  {lang === 'fr' ? project.description : (project.descriptionEn ?? project.description)}
+                </p>
+
+                {/* Tech tags */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {project.technologies.slice(0, 4).map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-muted-foreground border border-border"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                  {project.technologies.length > 4 && (
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-muted-foreground border border-border">
+                      +{project.technologies.length - 4}
+                    </span>
+                  )}
+                </div>
+
+                {/* Links */}
+                <div className="flex gap-3 pt-3 border-t border-border">
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-xs font-medium font-inter text-muted-foreground hover:text-foreground transition-colors duration-200"
+                    >
+                      <Github className="w-3.5 h-3.5" />
+                      {t('projects.code')}
+                    </a>
+                  )}
+                  {project.demoUrl && (
+                    <a
+                      href={project.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-xs font-medium font-inter text-blue-500 hover:text-blue-400 transition-colors duration-200 ml-auto"
+                    >
+                      {t('projects.demo')}
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div
+          className={`mt-16 text-center section-hidden ${visible ? 'section-visible' : ''}`}
+          style={{ transitionDelay: '0.5s' }}
+        >
+          <p className="font-space text-xl font-semibold text-foreground mb-4">
+            {t('projects.cta')}
+          </p>
+          <button
+            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-semibold font-inter text-sm transition-all duration-200 shadow-lg shadow-blue-500/20 hover:-translate-y-0.5"
+          >
+            {t('projects.cta_btn')}
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </section>

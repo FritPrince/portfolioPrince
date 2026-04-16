@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bibliothèque Interactive Three.js</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #f0f0f0; }
+        canvas { display: block; }
+        #instruction { position: absolute; top: 10px; width: 100%; text-align: center; color: #333; font-family: sans-serif; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div id="instruction">Cliquez sur un livre pour l'ouvrir</div>
+    <!-- Importation de Three.js et TWEEN pour les animations -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import TWEEN from 'https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@23.1.1/dist/tween.esm.js';
+
+        // --- CONFIGURATION SCÈNE ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf5f5f5);
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 5, 15);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(5, 10, 7);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        // --- MATÉRIAUX ---
+        const woodMat = new THREE.MeshStandardMaterial({ color: 0x8B5A2B }); // Couleur bois
+        const bookMaterials = [0xff595e, 0xffca3a, 0x8ac926, 0x1982c4, 0x6a4c93].map(c => new THREE.MeshStandardMaterial({ color: c }));
+
+        // --- CRÉATION DU MEUBLE ---
+        function createShelf() {
+            const shelfGroup = new THREE.Group();
+            
+            // Montants verticaux (côtés et milieu)
+            const sideGeo = new THREE.BoxGeometry(0.3, 12, 3);
+            for(let x of [-4, 0, 4]) {
+                const side = new THREE.Mesh(sideGeo, woodMat);
+                side.position.x = x;
+                shelfGroup.add(side);
+            }
+
+            // Étagères horizontales
+            const rowGeo = new THREE.BoxGeometry(8, 0.3, 3);
+            for(let y of [-5.8, -3.5, -1, 1.5, 4, 6]) {
+                const row = new THREE.Mesh(rowGeo, woodMat);
+                row.position.y = y;
+                shelfGroup.add(row);
+            }
+
+            // Fond
+            const backGeo = new THREE.BoxGeometry(8.3, 12, 0.1);
+            const back = new THREE.Mesh(backGeo, woodMat);
+            back.position.z = -1.5;
+            shelfGroup.add(back);
+
+            scene.add(shelfGroup);
+        }
+
+        // --- CRÉATION D'UN LIVRE ARTICULÉ ---
+        function createBook(colorIdx) {
+            const bookGroup = new THREE.Group();
+            const w = 0.4, h = 1.8, d = 1.2;
+            
+            // Le "Pivot" pour l'ouverture (placé sur le bord gauche du livre)
+            const pivot = new THREE.Group();
+            pivot.position.x = -w/2; 
+            bookGroup.add(pivot);
+
+            // Couverture avant
+            const coverGeo = new THREE.BoxGeometry(w, h, 0.05);
+            const cover = new THREE.Mesh(coverGeo, bookMaterials[colorIdx]);
+            cover.position.set(w/2, 0, d); // Décalé par rapport au pivot
+            pivot.add(cover);
+
+            // Pages (bloc blanc)
+            const pagesGeo = new THREE.BoxGeometry(w * 0.9, h * 0.95, d);
+            const pages = new THREE.Mesh(pagesGeo, new THREE.MeshStandardMaterial({color: 0xffffff}));
+            pages.position.set(0, 0, d/2);
+            bookGroup.add(pages);
+
+            // Dos et couverture arrière (simplifiés pour l'exemple)
+            const backCover = new THREE.Mesh(coverGeo, bookMaterials[colorIdx]);
+            backCover.position.set(0, 0, 0);
+            bookGroup.add(backCover);
+
+            bookGroup.userData = { open: false, originalPos: null };
+            return bookGroup;
+        }
+
+        // --- REMPLISSAGE DE LA BIBLIOTHÈQUE ---
+        const books = [];
+        function fillLibrary() {
+            const rows = [-4.6, -2.2, 0.2, 2.7, 5];
+            const cols = [-2, 2]; // Deux colonnes
+
+            rows.forEach(y => {
+                cols.forEach(xOffset => {
+                    for(let i = 0; i < 8; i++) {
+                        const b = createBook(Math.floor(Math.random() * bookMaterials.length));
+                        b.position.set(xOffset - 1.4 + (i * 0.45), y, -0.5);
+                        scene.add(b);
+                        books.push(b);
+                    }
+                });
+            });
+        }
+
+        createShelf();
+        fillLibrary();
+
+        // --- INTERACTION ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let selectedBook = null;
+
+        window.addEventListener('click', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(books, true);
+
+            if (intersects.length > 0) {
+                // Trouver le groupe parent "Livre"
+                let obj = intersects[0].object;
+                while(obj.parent && !books.includes(obj)) {
+                    obj = obj.parent;
+                }
+                
+                if (books.includes(obj)) {
+                    toggleBook(obj);
+                }
+            }
+        });
+
+        function toggleBook(book) {
+            // Si un livre est déjà ouvert, on le ferme d'abord
+            if (selectedBook && selectedBook !== book && selectedBook.userData.open) {
+                animateBook(selectedBook, false);
+            }
+
+            const isOpen = book.userData.open;
+            animateBook(book, !isOpen);
+            book.userData.open = !isOpen;
+            selectedBook = book;
+        }
+
+        function animateBook(book, open) {
+            const pivot = book.children[0]; // Le pivot de la couverture
+            
+            if (open) {
+                book.userData.originalPos = book.position.clone();
+                // Sortir le livre et l'ouvrir
+                new TWEEN.Tween(book.position)
+                    .to({ z: 2, x: 0, y: 0 }, 500)
+                    .easing(TWEEN.Easing.Quadratic.Out)
+                    .start();
+                
+                new TWEEN.Tween(pivot.rotation)
+                    .to({ y: -Math.PI * 0.8 }, 700)
+                    .delay(300)
+                    .easing(TWEEN.Easing.Quadratic.Out)
+                    .start();
+            } else {
+                // Fermer et ranger
+                new TWEEN.Tween(pivot.rotation)
+                    .to({ y: 0 }, 400)
+                    .easing(TWEEN.Easing.Quadratic.In)
+                    .start();
+
+                new TWEEN.Tween(book.position)
+                    .to({ 
+                        x: book.userData.originalPos.x, 
+                        y: book.userData.originalPos.y, 
+                        z: book.userData.originalPos.z 
+                    }, 600)
+                    .delay(200)
+                    .easing(TWEEN.Easing.Quadratic.In)
+                    .start();
+            }
+        }
+
+        // --- BOUCLE D'ANIMATION ---
+        function animate(time) {
+            requestAnimationFrame(animate);
+            TWEEN.update(time);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
