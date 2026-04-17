@@ -41,6 +41,7 @@
     "@react-spring/web": "^10.0.3",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.0",
+    "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "@tweenjs/tween.js": "^25.0.0",
     "@types/node": "20.6.2",

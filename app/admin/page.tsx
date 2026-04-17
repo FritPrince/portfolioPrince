@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import { Project } from '@/types';
 import * as Icon from '@/components/ui/icons';
 import { InlineLoader } from '@/components/ui/lottie-loader';
+import { createBrowserSupabase } from '@/lib/supabase-browser';
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface ContactMessage {
@@ -106,7 +108,7 @@ function UploadZone({
         <div className="relative mb-3 rounded-xl overflow-hidden" style={{ height: isPDF ? 'auto' : 180 }}>
           {isPDF ? (
             <div className="flex items-center gap-3 px-4 py-4" style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 12 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--oc-40)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
               </svg>
               <span className="label-sm text-white/50 truncate flex-1">{value.split('/').pop()}</span>
@@ -134,7 +136,7 @@ function UploadZone({
         className="relative rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-300"
         style={{
           borderColor: dragging ? 'rgba(99,102,241,0.6)' : 'var(--line)',
-          background: dragging ? 'rgba(99,102,241,0.05)' : 'rgba(255,255,255,0.01)',
+          background: dragging ? 'rgba(99,102,241,0.05)' : 'var(--oc-02)',
           minHeight: 120,
         }}
         onClick={() => inputRef.current?.click()}
@@ -572,7 +574,7 @@ function ProjectRow({
             target="_blank"
             rel="noopener noreferrer"
             className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 transition-colors"
-            style={{ background: 'rgba(255,255,255,0.04)' }}
+            style={{ background: 'var(--oc-04)' }}
           >
             <Icon.ExternalLink size={12} />
           </a>
@@ -580,7 +582,7 @@ function ProjectRow({
         <button
           onClick={onEdit}
           className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-indigo-400 transition-colors"
-          style={{ background: 'rgba(255,255,255,0.04)' }}
+          style={{ background: 'var(--oc-04)' }}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
@@ -590,7 +592,7 @@ function ProjectRow({
         <button
           onClick={onDelete}
           className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 transition-colors"
-          style={{ background: 'rgba(255,255,255,0.04)' }}
+          style={{ background: 'var(--oc-04)' }}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="3 6 5 6 21 6" />
@@ -768,6 +770,7 @@ const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
 
 /* ─── Page ───────────────────────────────────────────────────── */
 export default function AdminPage() {
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>('dashboard');
   const [projects,    setProjects]    = useState<Project[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
@@ -874,11 +877,11 @@ export default function AdminPage() {
               onClick={() => setTab(item.id)}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
               style={{
-                color: tab === item.id ? '#fff' : 'rgba(255,255,255,0.3)',
-                background: tab === item.id ? 'rgba(99,102,241,0.12)' : 'transparent',
+                color: tab === item.id ? '#6366F1' : 'var(--oc-30)',
+                background: tab === item.id ? 'rgba(99,102,241,0.10)' : 'transparent',
               }}
             >
-              <span style={{ color: tab === item.id ? '#6366F1' : 'rgba(255,255,255,0.25)' }}>
+              <span style={{ color: tab === item.id ? '#6366F1' : 'var(--oc-25)' }}>
                 {item.icon}
               </span>
               <span className="font-inter text-sm">{item.label}</span>
@@ -895,11 +898,24 @@ export default function AdminPage() {
         </nav>
 
         {/* Footer */}
-        <div className="px-6 py-5 border-t" style={{ borderColor: 'var(--line)' }}>
+        <div className="px-6 py-5 border-t space-y-3" style={{ borderColor: 'var(--line)' }}>
           <a href="/" className="flex items-center gap-2 label-sm text-white/25 hover:text-white/50 transition-colors">
             <Icon.ArrowLeft size={12} />
             Voir le site
           </a>
+          <button
+            onClick={async () => {
+              const supabase = createBrowserSupabase();
+              await supabase.auth.signOut();
+              router.replace('/admin/login');
+            }}
+            className="flex items-center gap-2 label-sm text-white/20 hover:text-red-400 transition-colors w-full"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+            </svg>
+            Déconnexion
+          </button>
         </div>
       </aside>
 
@@ -1141,7 +1157,7 @@ export default function AdminPage() {
                       <p className="label-sm text-white/20 mb-3 capitalize">{cat}</p>
                       <div className="flex flex-wrap gap-2">
                         {catSkills.map(sk => (
-                          <div key={sk.id ?? sk.name} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs" style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'rgba(255,255,255,0.5)' }}>
+                          <div key={sk.id ?? sk.name} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs" style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--oc-50)' }}>
                             {sk.name}
                             <button onClick={async () => { await fetch('/api/skills', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: sk.id }) }); setSkills(prev => prev.filter(x => x.id !== sk.id)); }} className="text-white/20 hover:text-red-400 transition-colors ml-1">
                               <Icon.Close size={10} />
@@ -1191,7 +1207,7 @@ export default function AdminPage() {
                     <div className="space-y-3">
                       {settings.cv_url && (
                         <div className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: 'var(--surface)', border: '1px solid var(--line)' }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--oc-40)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
                           </svg>
                           <a href={settings.cv_url} target="_blank" rel="noopener noreferrer" className="label-sm text-white/50 hover:text-white/80 transition-colors truncate flex-1">
@@ -1240,7 +1256,7 @@ export default function AdminPage() {
                 </div>
                 <div className="space-y-3">
                   {formations.length === 0 ? (
-                    <EmptyState icon={<Icon.BookOpen size={28} style={{ color: 'rgba(255,255,255,0.1)' }} />} text="Aucune formation" />
+                    <EmptyState icon={<Icon.BookOpen size={28} style={{ color: 'var(--oc-10)' }} />} text="Aucune formation" />
                   ) : formations.map(f => (
                     <FormationRow key={f.id} formation={f}
                       onDelete={async () => {
@@ -1274,7 +1290,7 @@ export default function AdminPage() {
                 </div>
                 <div className="space-y-3">
                   {ideas.length === 0 ? (
-                    <EmptyState icon={<Icon.Layers size={28} style={{ color: 'rgba(255,255,255,0.1)' }} />} text="Aucune idée" />
+                    <EmptyState icon={<Icon.Layers size={28} style={{ color: 'var(--oc-10)' }} />} text="Aucune idée" />
                   ) : ideas.map(idea => (
                     <IdeaRow key={idea.id} idea={idea}
                       onDelete={async () => {
@@ -1318,7 +1334,7 @@ function FormationRow({ formation, onDelete }: { formation: Formation; onDelete:
         <p className="label-sm truncate" style={{ color: 'var(--oc-25)' }}>{formation.description}</p>
         <p className="label-sm mt-0.5" style={{ color }}>{formation.price === 0 ? 'Gratuit' : `${formation.price.toLocaleString('fr-FR')} FCFA`}</p>
       </div>
-      <button onClick={onDelete} className="w-7 h-7 rounded-lg flex items-center justify-center text-white/20 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100" style={{ background: 'rgba(255,255,255,0.04)' }}>
+      <button onClick={onDelete} className="w-7 h-7 rounded-lg flex items-center justify-center text-white/20 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100" style={{ background: 'var(--oc-04)' }}>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
       </button>
     </motion.div>
@@ -1452,7 +1468,7 @@ function IdeaRow({ idea, onDelete }: { idea: Idea; onDelete: () => void }) {
         <p className="label-sm truncate" style={{ color: 'var(--oc-25)' }}>{idea.description}</p>
         {idea.pdfUrl && <p className="label-sm mt-0.5" style={{ color: 'var(--oc-20)' }}>PDF joint</p>}
       </div>
-      <button onClick={onDelete} className="w-7 h-7 rounded-lg flex items-center justify-center text-white/20 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100" style={{ background: 'rgba(255,255,255,0.04)' }}>
+      <button onClick={onDelete} className="w-7 h-7 rounded-lg flex items-center justify-center text-white/20 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100" style={{ background: 'var(--oc-04)' }}>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
       </button>
     </motion.div>
@@ -1584,7 +1600,7 @@ function SimpleRow({ title, subtitle, meta, badge, onDelete }: {
         {subtitle && <p className="label-sm text-white/25 truncate">{subtitle}</p>}
         {meta && <p className="label-sm text-white/15">{meta}</p>}
       </div>
-      <button onClick={onDelete} className="w-7 h-7 rounded-lg flex items-center justify-center text-white/20 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100" style={{ background: 'rgba(255,255,255,0.04)' }}>
+      <button onClick={onDelete} className="w-7 h-7 rounded-lg flex items-center justify-center text-white/20 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100" style={{ background: 'var(--oc-04)' }}>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
       </button>
     </motion.div>

@@ -448,6 +448,24 @@
   background: #E8E5E0;
 }
 
+/* ─── Hero photo gradients — theme-reactive via CSS (no JS flash) ── */
+.hero-fade-left {
+  background: linear-gradient(to right,
+    #04040a 0%, #04040a 8%,
+    rgba(4,4,10,0.6) 35%, transparent 65%);
+}
+.light .hero-fade-left {
+  background: linear-gradient(to right,
+    #F7F6F3 0%, #F7F6F3 8%,
+    rgba(247,246,243,0.6) 35%, transparent 65%);
+}
+.hero-fade-bottom {
+  background: linear-gradient(to top, #04040a 0%, transparent 30%);
+}
+.light .hero-fade-bottom {
+  background: linear-gradient(to top, #F7F6F3 0%, transparent 30%);
+}
+
 /* ─── Noise texture overlay ─────────────────────────────────── */
 .noise::after {
   content: '';

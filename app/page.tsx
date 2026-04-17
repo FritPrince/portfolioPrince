@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -185,8 +185,13 @@ export default function LandingPage() {
   const router        = useRef(useRouter());
   const portalsRef    = useRef<HTMLDivElement>(null);
   const trackRef      = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
-  const isDark     = resolvedTheme !== 'light';
+
+  useEffect(() => { setMounted(true); }, []);
+
+  // Before mount resolvedTheme is undefined — default to dark (matches defaultTheme)
+  const isDark     = !mounted ? true : resolvedTheme !== 'light';
   const profileSrc = isDark ? '/profilBlanc.png' : '/profilNoire.png';
 
   /* GSAP horizontal scroll for universe portals */
@@ -231,11 +236,11 @@ export default function LandingPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
-          <span className="label-sm" style={{ color: isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.35)' }}>Portfolio</span>
-          <span className="label-sm" style={{ color: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)' }}>·</span>
-          <span className="label-sm" style={{ color: isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.30)' }}>2026</span>
-          <span className="label-sm" style={{ color: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)' }}>·</span>
-          <span className="label-sm flex items-center gap-1" style={{ color: isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.30)' }}><Icon.MapPin size={10} />Bénin</span>
+          <span className="label-sm" style={{ color: 'var(--oc-30)' }}>Portfolio</span>
+          <span className="label-sm" style={{ color: 'var(--oc-15)' }}>·</span>
+          <span className="label-sm" style={{ color: 'var(--oc-25)' }}>2026</span>
+          <span className="label-sm" style={{ color: 'var(--oc-15)' }}>·</span>
+          <span className="label-sm flex items-center gap-1" style={{ color: 'var(--oc-25)' }}><Icon.MapPin size={10} />Bénin</span>
         </motion.div>
 
         {/* ── Photo — absolue, bord droit, pleine hauteur ──────── */}
@@ -247,23 +252,9 @@ export default function LandingPage() {
           transition={{ delay: 0.6, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Fondu gauche : intègre la photo au fond */}
-          <div
-            className="absolute inset-0 z-10 pointer-events-none"
-            style={{
-              background: isDark
-                ? 'linear-gradient(to right, #04040a 0%, #04040a 8%, rgba(4,4,10,0.6) 35%, transparent 65%)'
-                : 'linear-gradient(to right, #F7F6F3 0%, #F7F6F3 8%, rgba(247,246,243,0.6) 35%, transparent 65%)',
-            }}
-          />
+          <div className="hero-fade-left absolute inset-0 z-10 pointer-events-none" />
           {/* Fondu bas */}
-          <div
-            className="absolute inset-0 z-10 pointer-events-none"
-            style={{
-              background: isDark
-                ? 'linear-gradient(to top, #04040a 0%, transparent 30%)'
-                : 'linear-gradient(to top, #F7F6F3 0%, transparent 30%)',
-            }}
-          />
+          <div className="hero-fade-bottom absolute inset-0 z-10 pointer-events-none" />
           {/* Animation flottante */}
           <motion.div
             className="relative w-full h-full"
@@ -288,14 +279,14 @@ export default function LandingPage() {
           <div className="flex flex-col">
             <h1
               className="display-xl leading-none mb-4"
-              style={{ color: isDark ? '#ffffff' : '#0f0e13' }}
+              style={{ color: 'var(--txt)' }}
             >
               <RevealWord text="PRINCE" delay={0.3} className="block" />
               <span className="block">
                 <RevealWord text="AÏNEEL" delay={0.5} />
                 {' '}
                 <motion.span
-                  style={{ color: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(15,14,19,0.20)' }}
+                  style={{ color: 'var(--oc-20)' }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.7, duration: 0.6 }}
@@ -313,7 +304,7 @@ export default function LandingPage() {
 
             <motion.div
               className="h-px my-8"
-              style={{ maxWidth: 420, background: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)' }}
+              style={{ maxWidth: 420, background: 'var(--oc-10)' }}
               initial={{ scaleX: 0, originX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 1.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -324,7 +315,7 @@ export default function LandingPage() {
                 <motion.span
                   key={role}
                   className="font-inter text-sm md:text-base"
-                  style={{ color: isDark ? 'rgba(255,255,255,0.32)' : 'rgba(0,0,0,0.40)' }}
+                  style={{ color: 'var(--oc-35)' }}
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1.25 + i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -345,11 +336,11 @@ export default function LandingPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.8, duration: 0.5 }}
           >
-            <span className="label-sm transition-colors" style={{ color: isDark ? 'rgba(255,255,255,0.40)' : 'rgba(0,0,0,0.45)' }}>
+            <span className="label-sm transition-colors" style={{ color: 'var(--oc-40)' }}>
               Explorer mon univers
             </span>
             <motion.span
-              style={{ color: isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.35)' }}
+              style={{ color: 'var(--oc-30)' }}
               animate={{ y: [0, 4, 0] }}
               transition={{ repeat: Infinity, duration: 1.5 }}
             >
@@ -363,7 +354,7 @@ export default function LandingPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 2, duration: 0.5 }}
           >
-            <p className="label-sm" style={{ color: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.35)' }}>Disponible pour projets</p>
+            <p className="label-sm" style={{ color: 'var(--oc-25)' }}>Disponible pour projets</p>
             <p className="label-sm mt-1 flex items-center gap-1.5 justify-end" style={{ color: '#10B981' }}>
               <Icon.Dot size={6} style={{ color: '#10B981' }} />Actif
             </p>
