@@ -80,7 +80,6 @@ function Field({
     onBlur: () => setFocused(false),
     className: 'w-full bg-transparent font-inter text-sm outline-none resize-none',
     style: { color: 'var(--oc-80)', ...(multiline ? { minHeight: 120 } : {}) } as React.CSSProperties,
-    style: { minHeight: multiline ? 120 : undefined },
   };
 
   return (
