@@ -10,6 +10,9 @@ export interface Project {
   demoUrl: string;
   featured: boolean;
   category: string;
+  /** true si le projet est protégé par un code d'accès —
+      dans ce cas demoUrl est vide côté public (déverrouillage via /api/projects/[id]/unlock) */
+  hasCode?: boolean;
 }
 
 export interface ContactMessage {

@@ -346,6 +346,10 @@ function ProjectForm({
     demoUrl: initial?.demoUrl ?? '',
     category: initial?.category ?? 'frontend',
     featured: initial?.featured ?? false,
+    /* Code d'accès : write-only (jamais renvoyé par l'API).
+       Vide = ne pas changer · rempli = définir · removeCode = supprimer */
+    code: '',
+    removeCode: false,
   });
   const [saving, setSaving] = useState(false);
 
@@ -463,6 +467,30 @@ function ProjectForm({
           />
         </Field>
       </div>
+
+      <Field label={`Code d'accès${initial?.hasCode ? ' — 🔒 un code est actif sur ce projet' : ''}`}>
+        <input
+          value={form.code}
+          onChange={e => set('code')(e.target.value)}
+          placeholder={initial?.hasCode ? 'Laisser vide pour conserver le code actuel' : 'Laisser vide = projet public'}
+          autoComplete="off"
+          className={inputCls}
+          style={inputStyle}
+        />
+        <p className="font-inter text-xs mt-2 text-white/30">
+          Si un code est défini, « Voir le site » demandera ce code avant de rediriger vers la démo.
+        </p>
+        {initial?.hasCode && (
+          <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={form.removeCode}
+              onChange={e => set('removeCode')(e.target.checked)}
+            />
+            <span className="font-inter text-xs text-white/40">Supprimer le code (rendre le projet public)</span>
+          </label>
+        )}
+      </Field>
 
       <label className="flex items-center gap-3 cursor-pointer select-none">
         <div

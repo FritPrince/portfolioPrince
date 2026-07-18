@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import * as Icon from '@/components/ui/icons';
 import { Magnetic } from '@/components/ui/magnetic';
+import { CodeGate } from '@/components/ui/code-gate';
 import { Project } from '@/types';
 import { InlineLoader } from '@/components/ui/lottie-loader';
 
@@ -127,6 +128,7 @@ export default function ProjectDetailPage() {
   const [next, setNext] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<{ open: boolean; index: number }>({ open: false, index: 0 });
+  const [gateOpen, setGateOpen] = useState(false);
 
   useEffect(() => {
     const id = params.slug as string;
@@ -226,9 +228,14 @@ export default function ProjectDetailPage() {
         style={{ borderBottom: '1px solid var(--line)' }}
       >
         <div className="flex items-center gap-5 flex-wrap">
-          <span className="label-sm flex items-center gap-1.5" style={{ color: project.demoUrl ? 'var(--accent)' : 'var(--txt-dim)' }}>
-            <Icon.Dot size={6} />{project.demoUrl ? 'En production' : 'En développement'}
+          <span className="label-sm flex items-center gap-1.5" style={{ color: project.demoUrl || project.hasCode ? 'var(--accent)' : 'var(--txt-dim)' }}>
+            <Icon.Dot size={6} />{project.demoUrl || project.hasCode ? 'En production' : 'En développement'}
           </span>
+          {project.hasCode && (
+            <span className="label-sm flex items-center gap-1.5" style={{ color: 'var(--txt-muted)' }}>
+              <Icon.Lock size={11} /> Accès sur code
+            </span>
+          )}
           <span className="label-sm" style={{ color: 'var(--txt-muted)' }}>{project.technologies.length} technologies</span>
         </div>
         <div className="flex items-center gap-3">
@@ -237,6 +244,13 @@ export default function ProjectDetailPage() {
               <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="btn-pill btn-pill-solid text-sm" style={{ padding: '0.6rem 1.3rem' }}>
                 Voir le site ↗
               </a>
+            </Magnetic>
+          )}
+          {!project.demoUrl && project.hasCode && (
+            <Magnetic strength={0.25}>
+              <button onClick={() => setGateOpen(true)} className="btn-pill btn-pill-solid text-sm" style={{ padding: '0.6rem 1.3rem' }}>
+                <Icon.Lock size={13} /> Voir le site
+              </button>
             </Magnetic>
           )}
           {project.githubUrl && (
@@ -270,7 +284,13 @@ export default function ProjectDetailPage() {
               </div>
               <div>
                 <p className="label-sm mb-3" style={{ color: 'var(--txt-muted)' }}>Statut</p>
-                <p className="font-inter text-sm">{project.demoUrl ? 'En ligne, utilisé en production' : 'En cours de développement'}</p>
+                <p className="font-inter text-sm">
+                  {project.hasCode
+                    ? 'En ligne — accès privé, sur code'
+                    : project.demoUrl
+                      ? 'En ligne, utilisé en production'
+                      : 'En cours de développement'}
+                </p>
               </div>
             </div>
           </aside>
@@ -305,6 +325,14 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* ══ Porte à code ══════════════════════════════════════ */}
+      <CodeGate
+        projectId={project.id}
+        projectTitle={project.title}
+        open={gateOpen}
+        onClose={() => setGateOpen(false)}
+      />
 
       {/* ══ Lightbox ══════════════════════════════════════════ */}
       <AnimatePresence>

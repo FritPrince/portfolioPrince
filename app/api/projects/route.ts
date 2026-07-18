@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, description, image, gallery, technologies, githubUrl, demoUrl, category, featured } = body;
+    const { title, description, image, gallery, technologies, githubUrl, demoUrl, category, featured, code } = body;
 
     if (!title || !description || !category) {
       return NextResponse.json({ error: 'Champs requis manquants' }, { status: 400 });
@@ -44,6 +44,9 @@ export async function POST(request: NextRequest) {
         demo_url:     demoUrl      ?? '',
         category,
         featured:     featured     ?? false,
+        /* n'envoie la colonne que si un code est fourni — reste
+           compatible tant que la migration SQL n'est pas passée */
+        ...(typeof code === 'string' && code.trim() ? { code: code.trim() } : {}),
       })
       .select()
       .single();
@@ -56,8 +59,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/* Le code d'accès ne sort JAMAIS d'ici : si un projet est protégé,
+   on masque aussi son URL de démo — elle n'est délivrée que par
+   /api/projects/[id]/unlock après vérification du code. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalizeProject(p: any) {
+  const locked = typeof p.code === 'string' && p.code.trim().length > 0;
   return {
     id:           p.id,
     title:        p.title,
@@ -66,9 +73,10 @@ function normalizeProject(p: any) {
     gallery:      p.gallery      ?? [],
     technologies: p.technologies ?? [],
     githubUrl:    p.github_url   ?? '',
-    demoUrl:      p.demo_url     ?? '',
+    demoUrl:      locked ? '' : (p.demo_url ?? ''),
     category:     p.category,
     featured:     p.featured     ?? false,
+    hasCode:      locked,
     createdAt:    p.created_at,
   };
 }

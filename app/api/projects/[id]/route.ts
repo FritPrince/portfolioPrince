@@ -3,8 +3,11 @@ import { supabaseAdmin } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
+/* Le code d'accès ne sort JAMAIS d'ici : si un projet est protégé,
+   on masque aussi son URL de démo (délivrée par ./unlock uniquement). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalizeProject(p: any) {
+  const locked = typeof p.code === 'string' && p.code.trim().length > 0;
   return {
     id:           p.id,
     title:        p.title,
@@ -13,9 +16,10 @@ function normalizeProject(p: any) {
     gallery:      p.gallery      ?? [],
     technologies: p.technologies ?? [],
     githubUrl:    p.github_url   ?? '',
-    demoUrl:      p.demo_url     ?? '',
+    demoUrl:      locked ? '' : (p.demo_url ?? ''),
     category:     p.category,
     featured:     p.featured     ?? false,
+    hasCode:      locked,
     createdAt:    p.created_at,
   };
 }
@@ -41,7 +45,14 @@ export async function PUT(
 ) {
   try {
     const body = await request.json();
-    const { title, description, image, gallery, technologies, githubUrl, demoUrl, category, featured } = body;
+    const { title, description, image, gallery, technologies, githubUrl, demoUrl, category, featured, code, removeCode } = body;
+
+    /* Code d'accès : champ tapé → nouveau code ; case « supprimer » → null ;
+       sinon on ne touche pas au code existant. */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const codePatch: Record<string, any> = {};
+    if (removeCode === true) codePatch.code = null;
+    else if (typeof code === 'string' && code.trim()) codePatch.code = code.trim();
 
     const db = supabaseAdmin();
     const { data, error } = await db
@@ -56,6 +67,7 @@ export async function PUT(
         demo_url:     demoUrl,
         category,
         featured,
+        ...codePatch,
         updated_at:   new Date().toISOString(),
       })
       .eq('id', params.id)
