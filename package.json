@@ -85,5 +85,10 @@
   },
   "devDependencies": {
     "@types/nodemailer": "^6.4.17"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "unrs-resolver"
+    ]
   }
 }

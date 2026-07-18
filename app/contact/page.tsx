@@ -149,9 +149,12 @@ function SuccessState({ onReset }: { onReset: () => void }) {
         <Icon.Check size={32} strokeWidth={1.5} />
       </animated.div>
 
-      <h3 className="display-md mb-3" style={{ color: 'var(--txt)' }}>Message envoyé !</h3>
-      <p className="font-inter text-sm mb-8 max-w-sm" style={{ color: 'var(--oc-40)' }}>
-        Je reviens vers vous dans les 24h. En attendant, consultez mes projets.
+      <h3 className="display-md mb-3" style={{ color: 'var(--txt)' }}>Bien reçu.</h3>
+      <p className="font-inter text-sm mb-3 max-w-sm" style={{ color: 'var(--oc-40)' }}>
+        Je vous réponds sous 24h. En attendant, jetez un œil à mes projets.
+      </p>
+      <p className="hand-note mb-8" style={{ fontSize: '1.25rem' }}>
+        c&apos;est moi qui lis, pas un robot
       </p>
 
       <div className="flex gap-3">
@@ -221,69 +224,38 @@ export default function ContactPage() {
   return (
     <main style={{ background: 'var(--bg)', color: 'var(--txt)' }}>
 
-      {/* ── Header ──────────────────────────────────────────────── */}
-      <section className="on-media px-8 md:px-16 pt-28 pb-16 border-b relative overflow-hidden" style={{ borderColor: '#1e1e1e' }}>
-        {/* Video background */}
-        <video
-          autoPlay muted loop playsInline
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-          style={{ zIndex: 0, opacity: 0.35 }}
-        >
-          <source src="/assets/video2.mp4" type="video/mp4" />
-        </video>
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ zIndex: 1, background: 'linear-gradient(135deg, rgba(4,4,8,0.92) 0%, rgba(4,4,8,0.75) 60%, rgba(16,185,129,0.08) 100%)' }}
-        />
-
-        {/* Big number */}
-        <div
-          className="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 font-space font-bold pointer-events-none"
-          style={{ fontSize: 'clamp(8rem, 25vw, 20rem)', color: 'rgba(16,185,129,0.04)', lineHeight: 1 }}
-        >
-          04
-        </div>
-
+      {/* ── Header éditorial ────────────────────────────────────── */}
+      <section className="px-6 md:px-14 pt-36 pb-14" style={{ borderBottom: '1px solid var(--line)' }}>
         <motion.div
-          className="relative z-10 flex items-center gap-3 mb-8"
+          className="flex items-center gap-3 mb-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="w-6 h-px bg-white/20" />
-          <span className="label-sm text-white/30">Contact</span>
+          <span className="label-sm" style={{ color: 'var(--txt-muted)' }}>Contact</span>
         </motion.div>
 
         <motion.h1
-          className="relative z-10 display-xl text-white leading-none mb-4"
-          style={{ letterSpacing: '-0.03em' }}
+          className="font-display font-semibold mb-8"
+          style={{ fontSize: 'clamp(2.6rem, 7vw, 6rem)', lineHeight: 1.02, letterSpacing: '-0.02em' }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
-          Transformons
-        </motion.h1>
-        <motion.h1
-          className="relative z-10 display-xl leading-none mb-8"
-          style={{ color: 'rgba(255,255,255,0.18)', letterSpacing: '-0.03em' }}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        >
-          votre idée.
+          Transformons <span className="marker">votre idée</span>.
         </motion.h1>
 
         <motion.div
-          className="relative z-10 flex items-center gap-2"
+          className="flex items-center gap-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
           <div
             className="w-2 h-2 rounded-full"
-            style={{ background: '#10B981', boxShadow: '0 0 8px rgba(16,185,129,0.6)' }}
+            style={{ background: '#3BA55D', boxShadow: '0 0 8px rgba(59,165,93,0.5)' }}
           />
-          <span className="label-sm" style={{ color: '#10B981' }}>Disponible pour nouveaux projets</span>
+          <span className="label-sm" style={{ color: 'var(--txt-muted)' }}>Disponible pour nouveaux projets — réponse sous 24h</span>
         </motion.div>
       </section>
 
@@ -460,8 +432,8 @@ export default function ContactPage() {
                     disabled={sending}
                     className="relative overflow-hidden inline-flex items-center gap-3 px-8 py-3.5 rounded-full text-sm font-medium"
                     style={{
-                      background: sending ? 'rgba(16,185,129,0.5)' : '#10B981',
-                      color: '#fff',
+                      background: sending ? 'rgba(179,54,43,0.55)' : 'var(--felt)',
+                      color: '#FDF9EF',
                       cursor: sending ? 'not-allowed' : 'pointer',
                     }}
                     whileHover={sending ? {} : { scale: 1.04, boxShadow: '0 0 30px rgba(16,185,129,0.4)' }}

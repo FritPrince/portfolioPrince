@@ -10,9 +10,13 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        space: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
-        inter: ['"Inter"', 'system-ui', 'sans-serif'],
-        sans: ['"Inter"', 'system-ui', 'sans-serif'],
+        /* Alias historiques — tout le site les utilise, on les retype ici */
+        space: ['"Clash Display"', 'system-ui', 'sans-serif'],
+        inter: ['"General Sans"', 'system-ui', 'sans-serif'],
+        sans: ['"General Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Clash Display"', 'system-ui', 'sans-serif'],
+        hand: ['"Caveat"', 'cursive'],
+        mono: ['"Space Mono"', 'ui-monospace', 'monospace'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

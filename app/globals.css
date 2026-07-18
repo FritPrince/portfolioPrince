@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Google Fonts ─────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+/* ─── Fontes — « Kilomètre zéro » ──────────────────────────────
+   Clash Display : titres tranchants, contemporains.
+   General Sans : corps de texte net.
+   Caveat : rares notes manuscrites.
+   Space Mono : méta et labels techniques. */
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Space+Mono:wght@400;700&display=swap');
 
 /* ─── Base tokens ──────────────────────────────────────────── */
 @layer base {
@@ -30,17 +35,26 @@
     --ring: 213 94% 68%;
     --radius: 0.5rem;
 
-    /* Custom design tokens */
-    --bg:         #080808;
-    --surface:    #111111;
-    --surface-2:  #161616;
-    --line:       #1e1e1e;
-    --txt:        #f0f0f0;
-    --txt-muted:  #666666;
-    --txt-dim:    #333333;
+    /* Custom design tokens — « Kilomètre zéro », mode sombre (encre chaude) */
+    --bg:         #141210;
+    --surface:    #1D1A16;
+    --surface-2:  #24201B;
+    --line:       #2C2822;
+    --txt:        #EFEDE6;
+    --txt-muted:  #8A857B;
+    --txt-dim:    #4A463F;
 
     /* Universe accent — changes per page via inline style or context */
     --universe: #ffffff;
+
+    /* ── Accent unique : safran — le jaune zémidjan de Cotonou */
+    --accent-hi:  #F2B41B;  /* surfaces, surligneur, marques */
+    --accent:     #C89210;  /* version texte-safe sur fond clair */
+    --ink:        #191713;  /* encre — texte sur safran, toujours */
+    /* alias hérités (anciens composants) */
+    --felt:  #C89210;
+    --brass: #A98D4B;
+    --ivory: #EFEDE6;
 
     /* ── Adaptive opacity colors (white-based in dark, dark-based in light) */
     --oc-95: rgba(255,255,255,0.95);
@@ -88,16 +102,16 @@
     --input:               30 12% 88%;
     --ring:                213 94% 55%;
 
-    /* Custom design tokens — warm off-white */
-    --bg:         #F7F6F3;
-    --surface:    #FFFFFF;
-    --surface-2:  #EEECE8;
-    --line:       #E4E1DB;
-    --txt:        #18171B;
-    --txt-muted:  #7A7570;
-    --txt-dim:    #B5B0A8;
+    /* Custom design tokens — plâtre chaud (thème par défaut) */
+    --bg:         #EFEDE6;
+    --surface:    #F7F5EF;
+    --surface-2:  #E5E2D8;
+    --line:       #D8D4C8;
+    --txt:        #191713;
+    --txt-muted:  #6E6A60;
+    --txt-dim:    #B3AEA2;
 
-    --universe: #3B82F6;
+    --universe: #C89210;
 
     /* ── Adaptive opacity colors — dark text at same opacity */
     --oc-95: rgba(247,246,243,0.95);
@@ -133,7 +147,7 @@
   }
 
   body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'General Sans', system-ui, sans-serif;
     background: var(--bg);
     color: var(--txt);
     overflow-x: hidden;
@@ -141,17 +155,17 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'Clash Display', system-ui, sans-serif;
   }
 
   ::selection {
-    background: rgba(59,130,246,0.25);
+    background: rgba(242,180,27,0.35);
     color: var(--txt);
   }
 
   .light ::selection {
-    background: rgba(59,130,246,0.18);
-    color: #18171B;
+    background: rgba(242,180,27,0.45);
+    color: #191713;
   }
 
   ::-webkit-scrollbar { width: 4px; }
@@ -161,34 +175,34 @@
 
 /* ─── Typography scale ─────────────────────────────────────── */
 .display-xl {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(4rem, 14vw, 11rem);
   font-weight: 700;
-  line-height: 0.92;
-  letter-spacing: -0.03em;
-}
-
-.display-lg {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2.5rem, 7vw, 6rem);
-  font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: -0.025em;
-}
-
-.display-md {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(1.75rem, 4vw, 3.5rem);
-  font-weight: 600;
-  line-height: 1.05;
+  line-height: 0.94;
   letter-spacing: -0.02em;
 }
 
+.display-lg {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 700;
+  line-height: 0.97;
+  letter-spacing: -0.015em;
+}
+
+.display-md {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(1.75rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
 .label-sm {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -501,17 +515,24 @@
   background: var(--line);
 }
 
-/* ─── Tag pill ──────────────────────────────────────────────── */
+/* ─── Tag pill — collé à la main, légèrement de travers ─────── */
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 4px 11px;
   border-radius: 99px;
   border: 1px solid var(--line);
-  font-size: 0.75rem;
-  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  font-family: 'Space Mono', monospace;
   color: var(--txt-muted);
   background: var(--surface);
+  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.tag:nth-child(odd)  { transform: rotate(-1.1deg); }
+.tag:nth-child(even) { transform: rotate(1.1deg); }
+.tag:hover { transform: rotate(0deg) scale(1.05); border-color: var(--brass); color: var(--txt); }
+@media (prefers-reduced-motion: reduce) {
+  .tag, .tag:hover { transform: none; transition: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -597,3 +618,149 @@
 /* When explicitly coloured with text-white on dark context, keep it */
 .light .bg-blue-500 .text-white,
 .light .bg-blue-600 .text-white { color: #fff; }
+
+/* ═══════════════════════════════════════════════════════════════
+   L'ATELIER — la couche humaine (site entier)
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Notes manuscrites ── */
+.hand-note {
+  font-family: 'Caveat', cursive;
+  font-weight: 500;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  line-height: 1.15;
+  color: var(--brass);
+  transform: rotate(-2deg);
+  display: inline-block;
+}
+
+/* Souligné ondulé — trait de crayon */
+.squiggle {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='6' viewBox='0 0 40 6'%3E%3Cpath d='M0 3 Q 5 0, 10 3 T 20 3 T 30 3 T 40 3' fill='none' stroke='%23B3362B' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+  background-size: 40px 6px;
+  padding-bottom: 8px;
+}
+
+/* ── Boutons pilules ── */
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-family: 'General Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--txt);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease,
+              color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-pill:hover { border-color: var(--txt); transform: translateY(-2px); }
+.btn-pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.btn-pill-solid {
+  background: var(--accent-hi);
+  border-color: var(--accent-hi);
+  color: var(--ink);
+  font-weight: 600;
+}
+.btn-pill-solid:hover { background: #FFC53D; border-color: #FFC53D; }
+
+/* ── Bouton encre — CTA principal sur fond plâtre ── */
+.btn-ink {
+  background: var(--txt);
+  border-color: var(--txt);
+  color: var(--bg);
+  font-weight: 600;
+}
+.btn-ink:hover { background: var(--accent-hi); border-color: var(--accent-hi); color: var(--ink); }
+
+/* ── Surligneur safran — le geste signature ── */
+.marker {
+  position: relative;
+  display: inline-block;
+  z-index: 0;
+}
+.marker::before {
+  content: '';
+  position: absolute;
+  inset: 10% -3% 4% -2%;
+  background: var(--accent-hi);
+  transform: skew(-7deg) rotate(-0.8deg);
+  border-radius: 3px;
+  z-index: -1;
+}
+.marker { color: var(--ink); }
+
+/* ── Cartes projets empilées (sticky stack) ── */
+.stack-card {
+  position: sticky;
+  top: calc(14vh + var(--stack-i, 0) * 2.25rem);
+  border-radius: 1.5rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: 0 -12px 40px rgba(20, 18, 16, 0.10);
+}
+
+/* ── Accordéon services ── */
+.acc-row {
+  border-top: 1px solid var(--line);
+  transition: background 0.3s ease;
+}
+.acc-row:last-child { border-bottom: 1px solid var(--line); }
+.acc-row:hover { background: var(--surface); }
+
+/* ── Tags stickers — légère rotation, comme collés à la main ── */
+.sticker-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--txt-muted);
+  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.sticker-tag:nth-child(odd)  { transform: rotate(-1.2deg); }
+.sticker-tag:nth-child(even) { transform: rotate(1.2deg); }
+.sticker-tag:hover { transform: rotate(0deg) scale(1.06); border-color: var(--brass); color: var(--txt); }
+
+/* ── Marquee — bande qui défile ── */
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee { overflow: hidden; white-space: nowrap; }
+.marquee-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5rem;
+  padding-right: 2.5rem;
+  animation: marquee-x 28s linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+/* ── Photo penchée — comme posée sur l'établi ── */
+.photo-tilt {
+  transform: rotate(-2deg);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.photo-tilt:hover { transform: rotate(0deg) scale(1.02); }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+  .btn-pill:hover, .photo-tilt:hover, .sticker-tag:hover { transform: none; }
+}

@@ -167,8 +167,11 @@ function EmptyFormations() {
         </svg>
       </div>
       <div className="text-center">
-        <p className="font-space text-base font-semibold" style={{ color: 'var(--oc-25)' }}>Aucune formation disponible</p>
-        <p className="label-sm mt-1" style={{ color: 'var(--oc-15)' }}>Les formations seront bientôt disponibles.</p>
+        <p className="font-space text-base font-semibold" style={{ color: 'var(--oc-25)' }}>Rien ici pour l&apos;instant</p>
+        <p className="hand-note mt-3" style={{ fontSize: '1.3rem' }}>
+          je prépare les premières —<br />
+          <a href="/contact" className="squiggle" style={{ color: 'var(--brass)' }}>dis-moi ce que tu veux apprendre</a>
+        </p>
       </div>
     </div>
   );
@@ -212,34 +215,27 @@ export default function FormationsPage() {
   return (
     <main style={{ background: 'var(--bg)', color: 'var(--txt)' }}>
 
-      {/* ── Header ──────────────────────────────────────────────── */}
+      {/* ── Header éditorial ────────────────────────────────────── */}
       <section
         ref={headerRef}
-        className="px-8 md:px-16 pt-28 pb-16 relative overflow-hidden"
+        className="px-6 md:px-14 pt-36 pb-16"
+        style={{ borderBottom: '1px solid var(--line)' }}
       >
-        <div
-          className="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 font-space font-bold pointer-events-none select-none"
-          style={{ fontSize: 'clamp(8rem, 25vw, 20rem)', color: 'rgba(245,158,11,0.04)', lineHeight: 1 }}
-        >
-          05
-        </div>
-
         <div className="gsap-reveal flex items-center gap-3 mb-8">
-          <div className="w-6 h-px" style={{ background: 'var(--oc-20)' }} />
-          <span className="label-sm" style={{ color: 'var(--oc-30)' }}>Formations</span>
-          <span className="label-sm" style={{ color: 'var(--oc-15)' }}>·</span>
-          <span className="label-sm" style={{ color: '#F59E0B' }}>{formations.length} disponibles</span>
+          <span className="label-sm" style={{ color: 'var(--txt-muted)' }}>Formations</span>
+          <span className="label-sm" style={{ color: 'var(--txt-dim)' }}>·</span>
+          <span className="label-sm" style={{ color: 'var(--accent)' }}>{formations.length} disponibles</span>
         </div>
 
-        <h1 className="gsap-reveal display-xl leading-none mb-4" style={{ color: 'var(--txt)', letterSpacing: '-0.03em', maxWidth: '14ch' }}>
-          Apprendre.
-        </h1>
-        <h1 className="gsap-reveal display-xl leading-none mb-10" style={{ color: 'var(--oc-15)', letterSpacing: '-0.03em' }}>
-          Progresser. Livrer.
+        <h1
+          className="gsap-reveal font-display font-semibold mb-8"
+          style={{ fontSize: 'clamp(2.6rem, 7vw, 6rem)', lineHeight: 1.02, letterSpacing: '-0.02em', maxWidth: '16ch' }}
+        >
+          Apprendre, progresser, <span className="marker">livrer</span>.
         </h1>
 
-        <p className="gsap-reveal font-inter text-base md:text-lg max-w-lg leading-relaxed" style={{ color: 'var(--oc-35)' }}>
-          Des formations conçues par un praticien, pour des praticiens. Vidéos, PDF, templates — tout ce qu'il faut pour passer à l'action.
+        <p className="gsap-reveal font-inter text-base md:text-lg max-w-lg leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
+          Des formations conçues par un praticien, pour des praticiens. Vidéos, PDF, templates — tout ce qu&apos;il faut pour passer à l&apos;action.
         </p>
       </section>
 

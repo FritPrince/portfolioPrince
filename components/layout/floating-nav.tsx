@@ -6,14 +6,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
 
+/* Même ordre et même numérotation que les six mouvements du clavier (home) */
 const universes = [
-  { path: '/',            label: 'Accueil',    accent: '#6366F1', num: '00' },
-  { path: '/about',       label: 'À propos',   accent: '#3B82F6', num: '01' },
-  { path: '/services',    label: 'Services',   accent: '#F59E0B', num: '02' },
-  { path: '/projects',    label: 'Projets',    accent: '#6366F1', num: '03' },
-  { path: '/contact',     label: 'Contact',    accent: '#10B981', num: '04' },
-  { path: '/formations',  label: 'Formations', accent: '#F59E0B', num: '05' },
-  { path: '/ideas',       label: 'Idées',      accent: '#10B981', num: '06' },
+  { path: '/',            label: 'Accueil',    accent: '#A98D4B', num: '·' },
+  { path: '/about',       label: 'À propos',   accent: '#3B82F6', num: 'I' },
+  { path: '/services',    label: 'Services',   accent: '#F59E0B', num: 'II' },
+  { path: '/projects',    label: 'Projets',    accent: '#6366F1', num: 'III' },
+  { path: '/formations',  label: 'Formations', accent: '#F59E0B', num: 'IV' },
+  { path: '/ideas',       label: 'Idées',      accent: '#10B981', num: 'V' },
+  { path: '/contact',     label: 'Contact',    accent: '#10B981', num: 'VI' },
 ];
 
 export function FloatingNav() {

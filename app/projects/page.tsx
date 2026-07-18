@@ -70,7 +70,7 @@ function ProjectCard({
         {project.featured && (
           <div
             className="absolute top-3 left-3 label-sm px-2.5 py-1 rounded-full flex items-center gap-1"
-            style={{ background: 'rgba(99,102,241,0.9)', color: '#fff', backdropFilter: 'blur(8px)' }}
+            style={{ background: 'var(--accent-hi)', color: 'var(--ink)', backdropFilter: 'blur(8px)' }}
           >
             <Icon.Star size={10} />Featured
           </div>
@@ -118,7 +118,7 @@ function ProjectCard({
       {/* Bottom accent line on hover */}
       <motion.div
         className="absolute bottom-0 left-0 h-px"
-        style={{ background: 'linear-gradient(90deg, #6366F1, transparent)' }}
+        style={{ background: 'linear-gradient(90deg, var(--accent-hi), transparent)' }}
         initial={{ width: 0 }}
         whileHover={{ width: '100%' }}
         transition={{ duration: 0.4 }}
@@ -246,62 +246,28 @@ export default function ProjectsPage() {
   return (
     <main style={{ background: 'var(--bg)', color: 'var(--txt)' }}>
 
-      {/* ── Header ──────────────────────────────────────────────── */}
+      {/* ── Header éditorial ────────────────────────────────────── */}
       <section
         ref={headerRef}
-        className="on-media px-8 md:px-16 pt-28 pb-16 relative overflow-hidden min-h-[55vh] flex flex-col justify-end"
+        className="px-6 md:px-14 pt-36 pb-16"
+        style={{ borderBottom: '1px solid var(--line)' }}
       >
-        {/* Background — VR headset */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/assets/techsavvy-traveler-vr-headset-urban-street-with-travel-router-overlay-symbolizing-vr-travel-p.jpg"
-            alt=""
-            fill
-            priority
-            className="object-cover object-center"
-            sizes="100vw"
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(160deg, rgba(4,4,8,0.97) 0%, rgba(4,4,8,0.85) 40%, rgba(99,102,241,0.08) 70%, rgba(4,4,8,0.75) 100%)',
-            }}
-          />
+        <div className="gsap-reveal flex items-center gap-3 mb-8">
+          <span className="label-sm" style={{ color: 'var(--txt-muted)' }}>Projets</span>
+          <span className="label-sm" style={{ color: 'var(--txt-dim)' }}>·</span>
+          <span className="label-sm" style={{ color: 'var(--accent)' }}>{allProjects.length} réalisations</span>
         </div>
 
-        {/* Big number background */}
-        <div
-          className="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 font-space font-bold pointer-events-none select-none z-[1]"
-          style={{ fontSize: 'clamp(8rem, 25vw, 20rem)', color: 'rgba(99,102,241,0.06)', lineHeight: 1 }}
+        <h1
+          className="gsap-reveal font-display font-semibold mb-8"
+          style={{ fontSize: 'clamp(2.6rem, 7vw, 6rem)', lineHeight: 1.02, letterSpacing: '-0.02em', maxWidth: '18ch' }}
         >
-          03
-        </div>
+          Des problèmes réels, des solutions <span className="marker">en production</span>.
+        </h1>
 
-        <div className="relative z-10">
-          <div className="gsap-reveal flex items-center gap-3 mb-8">
-            <div className="w-6 h-px bg-white/20" />
-            <span className="label-sm text-white/30">Projets</span>
-            <span className="label-sm text-white/15">·</span>
-            <span className="label-sm" style={{ color: '#6366F1' }}>{allProjects.length} réalisations</span>
-          </div>
-
-          <h1
-            className="gsap-reveal display-xl text-white leading-none mb-4"
-            style={{ letterSpacing: '-0.03em', maxWidth: '16ch' }}
-          >
-            Des problèmes réels.
-          </h1>
-          <h1
-            className="gsap-reveal display-xl leading-none mb-10"
-            style={{ color: 'rgba(255,255,255,0.18)', letterSpacing: '-0.03em' }}
-          >
-            Des solutions concrètes.
-          </h1>
-
-          <p className="gsap-reveal font-inter text-white/35 text-base md:text-lg max-w-lg leading-relaxed">
-            Chaque projet ici est né d'un besoin réel. Du code qui fonctionne en production, des interfaces que de vraies personnes utilisent.
-          </p>
-        </div>
+        <p className="gsap-reveal font-inter text-base md:text-lg max-w-lg leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
+          Chaque projet ici est né d&apos;un besoin réel. Du code qui fonctionne, des interfaces que de vraies personnes utilisent.
+        </p>
       </section>
 
       {/* ── Stats ───────────────────────────────────────────────── */}
@@ -323,7 +289,7 @@ export default function ProjectsPage() {
               onClick={() => setActiveCategory(cat.key)}
               className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all duration-300"
               style={{
-                color: activeCategory === cat.key ? '#6366F1' : 'var(--oc-25)',
+                color: activeCategory === cat.key ? 'var(--accent)' : 'var(--oc-25)',
                 background: activeCategory === cat.key ? 'rgba(99,102,241,0.12)' : 'transparent',
                 border: `1px solid ${activeCategory === cat.key ? 'rgba(99,102,241,0.3)' : 'var(--line)'}`,
               }}
@@ -375,8 +341,8 @@ export default function ProjectsPage() {
         <motion.a
           href="/contact"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium"
-          style={{ background: '#6366F1', color: '#fff' }}
-          whileHover={{ scale: 1.04, boxShadow: '0 0 30px rgba(99,102,241,0.4)' }}
+          style={{ background: 'var(--felt)', color: '#FDF9EF' }}
+          whileHover={{ scale: 1.04, boxShadow: '0 0 30px rgba(179,54,43,0.35)' }}
           whileTap={{ scale: 0.97 }}
         >
           Démarrer un projet

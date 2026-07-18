@@ -1,57 +1,58 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { ReactNode, useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
+import { motion, useScroll, useSpring, useReducedMotion } from 'framer-motion';
+import { ReactNode } from 'react';
 
-const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
-import meditationData from '@/public/lottie/meditation.json';
-
+/* ─── Transition « coup de surligneur » ───────────────────────
+   À chaque navigation, deux panneaux inclinés balaient l'écran
+   (safran puis encre) — le geste du marqueur, à l'échelle de la
+   page. Une barre de progression safran suit le scroll. */
 export default function Template({ children }: { children: ReactNode }) {
-  const [show, setShow] = useState(true);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 28, mass: 0.4 });
 
-  // Hide the loader after the curtain duration
-  useEffect(() => {
-    const t = setTimeout(() => setShow(false), 950);
-    return () => clearTimeout(t);
-  }, []);
+  const wipe = {
+    initial: { x: '0%' },
+    animate: { x: '115%' },
+  };
 
   return (
     <>
-      {/* ── Lottie page-transition curtain ── */}
-      <AnimatePresence>
-        {show && (
-          <motion.div
-            key="page-curtain"
-            className="fixed inset-0 z-[9990] flex items-center justify-center pointer-events-none"
-            style={{ background: 'var(--bg)' }}
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
-          >
-            <motion.div
-              initial={{ opacity: 1, scale: 1 }}
-              animate={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5, delay: 0.45, ease: [0.76, 0, 0.24, 1] }}
-            >
-              <Lottie
-                animationData={meditationData}
-                loop
-                autoplay
-                style={{ width: 200, height: 200 }}
-                rendererSettings={{ preserveAspectRatio: 'xMidYMid slice' }}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Page content fades in ── */}
+      {/* Barre de progression du scroll */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.45, delay: 0.5 }}
+        className="fixed top-0 left-0 right-0 z-[9995] origin-left pointer-events-none"
+        style={{ scaleX, height: 3, background: 'var(--accent-hi)' }}
+        aria-hidden="true"
+      />
+
+      {/* Balayage — encre dessous, safran dessus, légèrement décalés */}
+      {!reduce && (
+        <>
+          <motion.div
+            className="fixed z-[9991] pointer-events-none"
+            style={{ top: '-10%', bottom: '-10%', left: '-15%', width: '130%', background: 'var(--txt)', transform: 'skewX(-8deg)' }}
+            initial={wipe.initial}
+            animate={wipe.animate}
+            transition={{ duration: 0.85, delay: 0.1, ease: [0.76, 0, 0.24, 1] }}
+            aria-hidden="true"
+          />
+          <motion.div
+            className="fixed z-[9992] pointer-events-none"
+            style={{ top: '-10%', bottom: '-10%', left: '-15%', width: '130%', background: 'var(--accent-hi)', transform: 'skewX(-8deg)' }}
+            initial={wipe.initial}
+            animate={wipe.animate}
+            transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
+            aria-hidden="true"
+          />
+        </>
+      )}
+
+      {/* Contenu — remonte doucement derrière le balayage */}
+      <motion.div
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 26 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
         {children}
       </motion.div>

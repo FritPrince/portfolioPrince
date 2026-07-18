@@ -565,10 +565,16 @@ function ChapterSection({ chapter, index }: { chapter: typeof CHAPTERS[0]; index
           </h2>
 
           <p
-            className="font-inter text-base md:text-lg mb-6 leading-relaxed"
-            style={{ color: `${chapter.accent}cc` }}
+            className="font-hand mb-6"
+            style={{
+              color: `${chapter.accent}dd`,
+              fontSize: 'clamp(1.5rem, 2.4vw, 1.9rem)',
+              lineHeight: 1.2,
+              transform: 'rotate(-1deg)',
+              transformOrigin: 'left',
+            }}
           >
-            "{chapter.tagline}"
+            «&nbsp;{chapter.tagline}&nbsp;»
           </p>
 
           <p className="font-inter text-sm md:text-base leading-relaxed mb-8" style={{ color: 'var(--oc-45)' }}>
@@ -663,29 +669,12 @@ export default function AboutPage() {
   return (
     <main style={{ background: 'var(--bg)', color: 'var(--txt)' }}>
 
-      {/* ── Hero ──────────────────────────────────────────────── */}
+      {/* ── Hero éditorial ───────────────────────────────────── */}
       <section
         ref={heroRef}
-        className="on-media relative min-h-screen flex flex-col justify-between px-8 md:px-16 pt-28 pb-16 overflow-hidden"
+        className="relative min-h-[92vh] flex flex-col justify-between px-6 md:px-14 pt-36 pb-16"
+        style={{ borderBottom: '1px solid var(--line)' }}
       >
-        {/* Background — developers at work */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/assets/group-four-software-engineers-standing-by-desk-with-computer-monitor.jpg"
-            alt=""
-            fill
-            priority
-            className="object-cover object-center"
-            sizes="100vw"
-          />
-          {/* Heavy left-to-right gradient — text zone is fully dark, image bleeds right */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(110deg, rgba(4,4,8,0.97) 0%, rgba(4,4,8,0.88) 40%, rgba(4,4,8,0.60) 70%, rgba(4,4,8,0.25) 100%)',
-            }}
-          />
-        </div>
         <motion.div style={{ opacity: heroOpacity, y: heroY }} className="relative z-10 flex-1 flex flex-col justify-center">
           {/* Eyebrow */}
           <motion.div
@@ -694,50 +683,36 @@ export default function AboutPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <div className="w-6 h-px bg-white/20" />
-            <span className="label-sm text-white/30">À propos</span>
-            <span className="label-sm text-white/15">·</span>
-            <span className="label-sm" style={{ color: '#3B82F6' }}>01 — 04</span>
+            <span className="label-sm" style={{ color: 'var(--txt-muted)' }}>À propos</span>
+            <span className="label-sm" style={{ color: 'var(--txt-dim)' }}>·</span>
+            <span className="label-sm" style={{ color: 'var(--accent)' }}>01 — 04</span>
           </motion.div>
 
-          {/* Headline */}
-          <div className="mb-8">
-            {/* Line 1 — cycling chapter titles */}
-            <motion.div
-              className="overflow-hidden mb-3"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            >
+          {/* Headline — le métier qui cycle, surligné au marqueur */}
+          <motion.h1
+            className="font-display font-semibold mb-8"
+            style={{ fontSize: 'clamp(2.6rem, 7.5vw, 6.4rem)', lineHeight: 1.05, letterSpacing: '-0.02em' }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="marker inline-block" style={{ overflow: 'hidden', verticalAlign: 'bottom' }}>
               <AnimatePresence mode="wait">
-                <motion.h1
+                <motion.span
                   key={cycleIndex}
-                  className="display-xl leading-none"
-                  style={{
-                    letterSpacing: '-0.03em',
-                    color: CHAPTERS[cycleIndex].accent,
-                  }}
-                  initial={{ y: 60, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -60, opacity: 0 }}
-                  transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                  className="inline-block"
+                  initial={{ y: '105%' }}
+                  animate={{ y: 0 }}
+                  exit={{ y: '-105%' }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 >
                   {CHAPTERS[cycleIndex].title}.
-                </motion.h1>
+                </motion.span>
               </AnimatePresence>
-            </motion.div>
-
-            {/* Line 2 — static */}
-            <motion.h1
-              className="display-xl leading-none"
-              style={{ color: 'var(--oc-12)', letterSpacing: '-0.03em' }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            >
-              Une identité.
-            </motion.h1>
-          </div>
+            </span>
+            <br />
+            Une identité.
+          </motion.h1>
 
           {/* Profile photo + bio */}
           <motion.div
@@ -747,7 +722,10 @@ export default function AboutPage() {
             transition={{ delay: 0.75, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
             {profilePhoto && (
-              <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden relative border border-white/10">
+              <div
+                className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden relative border border-white/10"
+                style={{ transform: 'rotate(-3deg)', boxShadow: '0 10px 24px rgba(0,0,0,0.4)' }}
+              >
                 <Image src={profilePhoto} alt="Prince Aïneel ONILOU" fill className="object-cover" sizes="80px" />
               </div>
             )}
@@ -825,13 +803,6 @@ export default function AboutPage() {
           />
         </motion.div>
 
-        {/* Background gradient */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse 50% 50% at 10% 50%, rgba(59,130,246,0.04) 0%, transparent 60%)',
-          }}
-        />
       </section>
 
       {/* ── Chapters ────────────────────────────────────────────── */}
@@ -906,8 +877,8 @@ export default function AboutPage() {
             <motion.a
               href="/contact"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium"
-              style={{ background: '#3B82F6', color: '#fff' }}
-              whileHover={{ scale: 1.04, boxShadow: '0 0 30px rgba(59,130,246,0.4)' }}
+              style={{ background: 'var(--felt)', color: '#FDF9EF' }}
+              whileHover={{ scale: 1.04, boxShadow: '0 0 30px rgba(179,54,43,0.35)' }}
               whileTap={{ scale: 0.97 }}
             >
               Me contacter
@@ -921,7 +892,7 @@ export default function AboutPage() {
                 download
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium"
                 style={{ background: 'transparent', color: 'var(--oc-50)', border: '1px solid var(--line)' }}
-                whileHover={{ borderColor: '#3B82F6', color: '#3B82F6' }}
+                whileHover={{ borderColor: 'var(--brass)', color: 'var(--brass)' }}
                 whileTap={{ scale: 0.97 }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

@@ -294,6 +294,12 @@ function IotUniverse() {
           <p className="absolute top-4 left-4 label-sm" style={{ color: '#10B981' }}>
             Maison intelligente — vue schématique
           </p>
+          <span
+            className="hand-note absolute bottom-3 right-5"
+            style={{ fontSize: '1.15rem', transform: 'rotate(-3deg)' }}
+          >
+            chez moi, pour de vrai
+          </span>
           {nodes.map(node => (
             <motion.button
               key={node.id}
@@ -460,59 +466,36 @@ export default function ServicesPage() {
 
   return (
     <main style={{ background: 'var(--bg)', color: 'var(--txt)' }}>
-      {/* ── Page hero with background ────────────────────────── */}
-      <div className="on-media relative px-8 md:px-16 pt-28 pb-16 border-b overflow-hidden" style={{ borderColor: '#1e1e1e' }}>
-        {/* Robot/AI background */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/assets/robot-arm-controls-humanity-like-puppets-neural-networks-ai-superiority-singularity-information.jpg"
-            alt=""
-            fill
-            priority
-            className="object-cover object-top"
-            sizes="100vw"
-          />
-          <div
-            className="absolute inset-0"
-            style={{ background: 'linear-gradient(135deg, rgba(4,4,8,0.94) 0%, rgba(4,4,8,0.78) 55%, rgba(4,4,8,0.55) 100%)' }}
-          />
-        </div>
-        <div className="relative z-10">
-        <p className="label-sm text-white/25 mb-3">Services</p>
-        <h1 className="display-md text-white mb-2">
-          Cinq univers.{' '}
-          <motion.span
-            key={activeUniverse}
-            style={{ color: current.accent }}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            Une expertise.
-          </motion.span>
+      {/* ── Header éditorial ─────────────────────────────────── */}
+      <div className="px-6 md:px-14 pt-36 pb-14" style={{ borderBottom: '1px solid var(--line)' }}>
+        <p className="label-sm mb-8" style={{ color: 'var(--txt-muted)' }}>Services</p>
+        <h1
+          className="font-display font-semibold mb-6"
+          style={{ fontSize: 'clamp(2.6rem, 7vw, 6rem)', lineHeight: 1.02, letterSpacing: '-0.02em' }}
+        >
+          Cinq univers, une seule <span className="marker">exigence</span>.
         </h1>
-        <p className="font-inter text-white/30 text-sm max-w-xl">
-          Chaque domaine est une histoire à part entière. Explorez-les.
+        <p className="font-inter text-base md:text-lg max-w-xl leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
+          Livrer quelque chose qui fonctionne, en production. Chaque domaine est une histoire — explorez-les.
         </p>
 
         {/* Universe tabs */}
-        <div className="flex flex-wrap gap-2 mt-8">
+        <div className="flex flex-wrap gap-2 mt-10">
           {UNIVERSES.map(u => (
             <button
               key={u.id}
               onClick={() => scrollToUniverse(u.id)}
               className="px-4 py-2 rounded-full label-sm transition-all duration-300 border"
               style={{
-                color: activeUniverse === u.id ? u.accent : 'rgba(255,255,255,0.55)',
-                borderColor: activeUniverse === u.id ? u.accent + '40' : 'rgba(255,255,255,0.18)',
-                background: activeUniverse === u.id ? u.accent + '10' : 'rgba(255,255,255,0.04)',
+                color: activeUniverse === u.id ? 'var(--ink)' : 'var(--txt-muted)',
+                borderColor: activeUniverse === u.id ? 'var(--accent-hi)' : 'var(--line)',
+                background: activeUniverse === u.id ? 'var(--accent-hi)' : 'var(--surface)',
               }}
             >
               {u.num} {u.label}
             </button>
           ))}
         </div>
-        </div>{/* end z-10 wrapper */}
       </div>
 
       {/* Universe sidebar (desktop) */}

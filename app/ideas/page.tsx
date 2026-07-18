@@ -158,54 +158,46 @@ export default function IdeasPage() {
   return (
     <main className="relative" style={{ background: 'var(--bg)', color: 'var(--txt)' }}>
 
-      {/* ── Header ──────────────────────────────────────────────── */}
-      <section className="px-8 md:px-16 pt-28 pb-10 relative overflow-hidden">
-        <div
-          className="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 font-space font-bold pointer-events-none select-none"
-          style={{ fontSize: 'clamp(8rem, 25vw, 20rem)', color: 'rgba(16,185,129,0.04)', lineHeight: 1 }}
-        >
-          06
-        </div>
-
+      {/* ── Header éditorial ────────────────────────────────────── */}
+      <section className="px-6 md:px-14 pt-36 pb-12">
         <motion.div
           className="flex items-center gap-3 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <div className="w-6 h-px" style={{ background: 'var(--oc-20)' }} />
-          <span className="label-sm" style={{ color: 'var(--oc-30)' }}>Bibliothèque d'idées</span>
-          <span className="label-sm" style={{ color: 'var(--oc-15)' }}>·</span>
-          <span className="label-sm" style={{ color: '#10B981' }}>{ideas.length} idées</span>
+          <span className="label-sm" style={{ color: 'var(--txt-muted)' }}>Bibliothèque d&apos;idées</span>
+          <span className="label-sm" style={{ color: 'var(--txt-dim)' }}>·</span>
+          <span className="label-sm" style={{ color: 'var(--accent)' }}>{ideas.length} idées</span>
         </motion.div>
 
         <motion.h1
-          className="display-xl leading-none mb-4"
-          style={{ color: 'var(--txt)', letterSpacing: '-0.03em', maxWidth: '14ch' }}
+          className="font-display font-semibold mb-8"
+          style={{ fontSize: 'clamp(2.6rem, 7vw, 6rem)', lineHeight: 1.02, letterSpacing: '-0.02em', maxWidth: '16ch' }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
-          Des idées qui attendent.
-        </motion.h1>
-        <motion.h1
-          className="display-xl leading-none mb-10"
-          style={{ color: 'var(--oc-15)', letterSpacing: '-0.03em' }}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        >
-          Prends la tienne.
+          Des idées qui attendent. <span className="marker">Prends la tienne</span>.
         </motion.h1>
 
         <motion.p
           className="font-inter text-base md:text-lg max-w-lg leading-relaxed"
-          style={{ color: 'var(--oc-35)' }}
+          style={{ color: 'var(--txt-muted)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
           Chaque idée est livrée avec son cahier des charges. Clique sur un livre pour en savoir plus.
+        </motion.p>
+        <motion.p
+          className="hand-note mt-4"
+          style={{ fontSize: '1.4rem', color: 'var(--accent)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9, duration: 0.6 }}
+        >
+          sers-toi, c&apos;est fait pour ça
         </motion.p>
       </section>
 
@@ -220,7 +212,8 @@ export default function IdeasPage() {
                 <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
               </svg>
             </div>
-            <p className="font-space text-sm font-semibold" style={{ color: 'var(--oc-25)' }}>Aucune idée disponible</p>
+            <p className="font-space text-sm font-semibold" style={{ color: 'var(--oc-25)' }}>La bibliothèque est vide</p>
+            <p className="hand-note mt-2" style={{ fontSize: '1.25rem' }}>les premiers livres arrivent — reviens bientôt</p>
           </div>
         ) : (
           <LibraryScene ideas={ideasWithColors} onSelect={handleSelect} selectedId={selected?.id ?? null} isDark={isDark} />
